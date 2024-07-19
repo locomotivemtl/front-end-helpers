@@ -1,0 +1,19 @@
+{
+    "name": "@locomotivemtl/postcss-tailwind-shortcuts",
+    "version": "1.0.0",
+    "description": "A handful set of shortcut functions for PostCSS declarations.",
+    "main": "index.ts",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/locomotivemtl/tailwindcss-helpers.git"
+    },
+    "author": "Locomotive Inc.",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/locomotivemtl/tailwindcss-helpers/issues"
+    },
+    "homepage": "https://github.com/locomotivemtl/tailwindcss-helpers/packages/postcss-tailwind-shortcuts#readme"
+}

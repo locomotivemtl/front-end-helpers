@@ -1,0 +1,17 @@
+{
+    "name": "@locomotivemtl/tailwindcss-helpers",
+    "version": "1.0.0",
+    "description": "A toolkit for enhancing and optimizing Tailwind CSS workflow.",
+    "private": true,
+    "type": "module",
+    "workspaces": [
+        "packages/postcss-tailwind-shortcuts"
+    ],
+    "devDependencies": {
+        "typescript": "^5.5.3"
+    },
+    "dependencies": {
+        "postcss": "^8.4.39",
+        "tailwindcss": "^3.4.6"
+    }
+}

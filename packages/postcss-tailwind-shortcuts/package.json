@@ -15,5 +15,5 @@
     "bugs": {
         "url": "https://github.com/locomotivemtl/tailwindcss-helpers/issues"
     },
-    "homepage": "https://github.com/locomotivemtl/tailwindcss-helpers/packages/postcss-tailwind-shortcuts#readme"
+    "homepage": "https://github.com/locomotivemtl/tailwindcss-helpers/tree/main/packages/postcss-tailwind-shortcuts"
 }

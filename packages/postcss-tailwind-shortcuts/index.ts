@@ -3,29 +3,27 @@ import { CustomThemeConfig } from 'tailwindcss/types/config';
 const tailwindAliasesMap = [
     {
         functionIdent: 'speed',
-        tailwindKey: 'transitionDuration',
+        tailwindKey: 'transitionDuration'
     },
     {
         functionIdent: 'ease',
-        tailwindKey: 'transitionTimingFunction',
+        tailwindKey: 'transitionTimingFunction'
     },
     {
         functionIdent: 'z',
-        tailwindKey: 'zIndex',
+        tailwindKey: 'zIndex'
     },
     {
         functionIdent: 'color',
-        tailwindKey: 'colors',
+        tailwindKey: 'colors'
     },
     {
         functionIdent: 'spacing',
-        tailwindKey: 'spacing',
-    },
+        tailwindKey: 'spacing'
+    }
 ];
 
-const postcssTailwindShortcuts = (
-    tailwindThemeConfig: Partial<CustomThemeConfig>
-) => {
+const postcssTailwindShortcuts = (tailwindThemeConfig: Partial<CustomThemeConfig>) => {
     return {
         postcssPlugin: 'postcss-tailwind-shortcuts',
 
@@ -41,45 +39,35 @@ const postcssTailwindShortcuts = (
                 );
 
                 // Replace the function with the Tailwind value
-                decl.value = decl.value.replace(
-                    regex,
-                    (match, ident, value) => {
-                        // Find the corresponding tailwind key and get the value
-                        const alias = tailwindAliasesMap.find(
-                            (alias) => alias.functionIdent === ident
-                        );
+                decl.value = decl.value.replace(regex, (match, ident, value) => {
+                    // Find the corresponding tailwind key and get the value
+                    const alias = tailwindAliasesMap.find((alias) => alias.functionIdent === ident);
 
-                        if (alias) {
-                            const tailwindKey = alias.tailwindKey;
-                            const defaultValue = 'default'; // Default key value to use if no value is provided
+                    if (alias) {
+                        const tailwindKey = alias.tailwindKey;
+                        const defaultValue = 'default'; // Default key value to use if no value is provided
 
-                            // Determine the value to use
-                            const keyValue = value || defaultValue;
+                        // Determine the value to use
+                        const keyValue = value || defaultValue;
 
-                            // Access the value from the Tailwind config
-                            const tailwindValue =
-                                tailwindThemeConfig.extend[tailwindKey]?.[
-                                    keyValue
-                                ];
+                        // Access the value from the Tailwind config
+                        const tailwindValue = tailwindThemeConfig.extend[tailwindKey]?.[keyValue];
 
-                            // Log an error if no value is found
-                            if (!tailwindValue) {
-                                console.error(
-                                    `No value found for ${tailwindKey}.${keyValue}`
-                                );
-                                return match;
-                            }
-
-                            // Return the Tailwind value
-                            return tailwindValue;
+                        // Log an error if no value is found
+                        if (!tailwindValue) {
+                            console.error(`No value found for ${tailwindKey}.${keyValue}`);
+                            return match;
                         }
 
-                        // Return the original value if no match is found
-                        return match;
+                        // Return the Tailwind value
+                        return tailwindValue;
                     }
-                );
+
+                    // Return the original value if no match is found
+                    return match;
+                });
             });
-        },
+        }
     };
 };
 

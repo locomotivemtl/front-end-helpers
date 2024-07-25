@@ -1,6 +1,6 @@
 {
     "name": "@locomotivemtl/postcss-tailwind-shortcuts",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "A handful set of shortcut functions for PostCSS declarations.",
     "main": "index.ts",
     "scripts": {

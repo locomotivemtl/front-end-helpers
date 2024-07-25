@@ -4,6 +4,7 @@
     "description": "A handful set of shortcut functions for PostCSS declarations.",
     "main": "index.ts",
     "scripts": {
+        "format": "prettier --write \"./**/*.{astro,js,ts,css,scss}\"",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {

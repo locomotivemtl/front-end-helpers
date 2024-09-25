@@ -4,7 +4,7 @@
     "description": "Creates an overlay grid for web development, allowing designers and developers to visualize the grid structure based on design guidelines.",
     "repository": {
         "type": "git",
-        "url": "https://github.com/locomotivemtl/front-end-helpers.git"
+        "url": "git+https://github.com/locomotivemtl/front-end-helpers.git"
     },
     "author": "Locomotive Inc.",
     "license": "MIT",

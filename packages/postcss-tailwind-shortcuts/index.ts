@@ -1,5 +1,9 @@
 import { CustomThemeConfig } from 'tailwindcss/types/config';
 
+type Options = {
+    prefix?: string;
+};
+
 const tailwindAliasesMap = [
     {
         functionIdent: 'speed',
@@ -23,7 +27,7 @@ const tailwindAliasesMap = [
     }
 ];
 
-const postcssTailwindShortcuts = (tailwindThemeConfig: Partial<CustomThemeConfig>) => {
+const postcssTailwindShortcuts = (tailwindThemeConfig: Partial<CustomThemeConfig>, options: Options = {}) => {
     return {
         postcssPlugin: 'postcss-tailwind-shortcuts',
 
@@ -31,17 +35,32 @@ const postcssTailwindShortcuts = (tailwindThemeConfig: Partial<CustomThemeConfig
             root.walkDecls((decl) => {
                 // Create a concatenated regular expression pattern for all functionIdent values
                 const functionIdents = tailwindAliasesMap
-                    .map((alias) => alias.functionIdent)
+                    .map((alias) => {
+                        if (options?.prefix) {
+                            return `${options?.prefix}-${alias.functionIdent}`;
+                        }
+
+                        return alias.functionIdent;
+                    })
                     .join('|');
                 const regex = new RegExp(
                     `\\b(${functionIdents})\\s*\\(\\s*['"]?([^'")]+)?['"]?\\s*\\)`,
                     'g'
                 );
 
+                console.log(functionIdents);
+
+
                 // Replace the function with the Tailwind value
                 decl.value = decl.value.replace(regex, (match, ident, value) => {
                     // Find the corresponding tailwind key and get the value
-                    const alias = tailwindAliasesMap.find((alias) => alias.functionIdent === ident);
+                    const alias = tailwindAliasesMap.find((alias) => {
+                        if (options?.prefix) {
+                            return `${options?.prefix}-${alias.functionIdent}` === ident;
+                        }
+
+                        return alias.functionIdent === ident;
+                    });
 
                     if (alias) {
                         const tailwindKey = alias.tailwindKey;

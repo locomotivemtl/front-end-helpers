@@ -61,6 +61,34 @@ export default {
 };
 ```
 
+## Options
+
+| Option | Type   | Description                                      |
+|--------|--------|--------------------------------------------------|
+| `prefix` | `string` | A string appended before the shortcut function   |
+
+### Prefix
+
+> [!TIP]
+> Sometimes, SASS uses reserved expressions, meaning we can't create a shortcut with the same name. This happened recently with the `color` module, which prevents the use of a `color()` shortcut. In such cases, it's better to prefix all shortcuts with a string of your choice.
+
+The prefix will be appended before a hyphen (`-`).
+
+```js
+import postcssTailwindShortcuts from '@locomotivemtl/postcss-tailwind-shortcuts';
+import tailwindConfig from './tailwind.config.js';
+
+export default {
+    plugins: [
+        postcssTailwindShortcuts(tailwindConfig.theme, {
+            prefix: 't'
+        })
+    ]
+};
+```
+
+This will create for example `t-color()`.
+
 ## Shortcut Functions
 
 This plugin supports the following shortcut functions, which can be used in your CSS declarations to reference Tailwind configuration values:

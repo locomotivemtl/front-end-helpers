@@ -48,9 +48,6 @@ const postcssTailwindShortcuts = (tailwindThemeConfig: Partial<CustomThemeConfig
                     'g'
                 );
 
-                console.log(functionIdents);
-
-
                 // Replace the function with the Tailwind value
                 decl.value = decl.value.replace(regex, (match, ident, value) => {
                     // Find the corresponding tailwind key and get the value

@@ -81,13 +81,13 @@ import tailwindConfig from './tailwind.config.js';
 export default {
     plugins: [
         postcssTailwindShortcuts(tailwindConfig.theme, {
-            prefix: 't'
+            prefix: 'theme'
         })
     ]
 };
 ```
 
-This will create for example `t-color()`.
+This will create for example `theme-color()`.
 
 ## Shortcut Functions
 

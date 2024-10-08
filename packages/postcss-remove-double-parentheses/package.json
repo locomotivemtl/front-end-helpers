@@ -1,7 +1,7 @@
 {
     "name": "@locomotivemtl/postcss-remove-double-parentheses",
     "version": "1.0.0",
-    "description": "Removes double parentheses from CSS media queries.",
+    "description": "Removes double parentheses around media queries.",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/locomotivemtl/front-end-helpers.git"

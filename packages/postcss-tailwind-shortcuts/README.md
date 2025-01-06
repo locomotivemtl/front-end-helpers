@@ -154,6 +154,3 @@ Results :
     transition-duration: 300ms;
 }
 ```
-
-## @todo
-- [] Add Javascript support

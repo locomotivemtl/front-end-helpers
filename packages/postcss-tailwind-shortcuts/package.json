@@ -1,11 +1,19 @@
 {
     "name": "@locomotivemtl/postcss-tailwind-shortcuts",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "A handful set of shortcut functions for PostCSS declarations.",
-    "main": "index.ts",
+    "main": "dist/postcss-tailwind-shortcuts.js",
     "scripts": {
-        "format": "prettier --write \"./**/*.{astro,js,ts,css,scss}\"",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "clean": "rimraf dist bundled",
+        "build": "npm run clean && npm-run-all --parallel build:dist build:bundle build:types",
+        "build:types": "tsc --allowJs -d --emitDeclarationOnly --declarationDir ./dist/types --removeComments ./index.ts",
+        "build:dist": "microbundle build -i index.ts --o ./dist",
+        "build:bundle": "npm-run-all build:bundle-full build:bundle-min",
+        "build:bundle-full": "microbundle build -i index.ts --o ./bundled/postcss-tailwind-shortcuts.js --no-sourcemap --no-pkg-main --external none --name PostCSSRemoveDoubleParentheses --format umd --no-compress",
+        "build:bundle-min": "microbundle build -i index.ts --o ./bundled/postcss-tailwind-shortcuts.min.js --no-sourcemap --no-pkg-main --external none --name PostCSSRemoveDoubleParentheses --format umd",
+        "watch": "microbundle watch -i index.ts --o ./dist --no-compress",
+        "publish:beta": "npm publish --tag beta",
+        "format": "prettier --write \"./**/*.{astro,js,ts,css,scss}\""
     },
     "repository": {
         "type": "git",
@@ -22,7 +30,6 @@
     },
     "type": "module",
     "source": "index.ts",
-    "main": "dist/postcss-tailwind-shortcuts.js",
     "umd:main": "dist/postcss-tailwind-shortcuts.umd.js",
     "module": "dist/postcss-tailwind-shortcuts.mjs",
     "types": "dist/types/index.d.ts",
@@ -33,18 +40,6 @@
             "default": "./dist/postcss-tailwind-shortcuts.modern.mjs"
         },
         "./dist/*": "./dist/*"
-    },
-    "scripts": {
-        "clean": "rimraf dist bundled",
-        "build": "npm run clean && npm-run-all --parallel build:dist build:bundle build:types",
-        "build:types": "tsc --allowJs -d --emitDeclarationOnly --declarationDir ./dist/types --removeComments ./index.ts",
-        "build:dist": "microbundle build -i index.ts --o ./dist",
-        "build:bundle": "npm-run-all build:bundle-full build:bundle-min",
-        "build:bundle-full": "microbundle build -i index.ts --o ./bundled/postcss-tailwind-shortcuts.js --no-sourcemap --no-pkg-main --external none --name PostCSSRemoveDoubleParentheses --format umd --no-compress",
-        "build:bundle-min": "microbundle build -i index.ts --o ./bundled/postcss-tailwind-shortcuts.min.js --no-sourcemap --no-pkg-main --external none --name PostCSSRemoveDoubleParentheses --format umd",
-        "watch": "microbundle watch -i index.ts --o ./dist --no-compress",
-        "publish:beta": "npm publish --tag beta",
-        "format": "prettier --write \"./**/*.{astro,js,ts,css,scss}\""
     },
     "files": [
         "dist",

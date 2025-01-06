@@ -1,0 +1,53 @@
+{
+    "name": "@locomotivemtl/postcss-helpers-functions",
+    "version": "1.0.0",
+    "description": "A set of useful PostCSS functions to help you write better CSS.",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/locomotivemtl/front-end-helpers.git"
+    },
+    "author": "Locomotive Inc.",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/locomotivemtl/front-end-helpers/issues"
+    },
+    "engines": {
+        "node": ">=20"
+    },
+    "type": "module",
+    "source": "index.ts",
+    "main": "dist/postcss-helpers-functions.js",
+    "umd:main": "dist/postcss-helpers-functions.umd.js",
+    "module": "dist/postcss-helpers-functions.mjs",
+    "types": "dist/types/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/types/index.d.ts",
+            "require": "./dist/postcss-helpers-functions.js",
+            "default": "./dist/postcss-helpers-functions.modern.mjs"
+        },
+        "./dist/*": "./dist/*"
+    },
+    "scripts": {
+        "clean": "rimraf dist bundled",
+        "build": "npm run clean && npm-run-all --parallel build:dist build:bundle build:types",
+        "build:types": "tsc --allowJs -d --emitDeclarationOnly --declarationDir ./dist/types --removeComments ./index.ts",
+        "build:dist": "microbundle build -i index.ts --o ./dist",
+        "build:bundle": "npm-run-all build:bundle-full build:bundle-min",
+        "build:bundle-full": "microbundle build -i index.ts --o ./bundled/postcss-helpers-functions.js --no-sourcemap --no-pkg-main --external none --name PostCSSRemoveDoubleParentheses --format umd --no-compress",
+        "build:bundle-min": "microbundle build -i index.ts --o ./bundled/postcss-helpers-functions.min.js --no-sourcemap --no-pkg-main --external none --name PostCSSRemoveDoubleParentheses --format umd",
+        "watch": "microbundle watch -i index.ts --o ./dist --no-compress",
+        "publish:beta": "npm publish --tag beta",
+        "format": "prettier --write \"./**/*.{astro,js,ts,css,scss}\""
+    },
+    "files": [
+        "dist",
+        "bundled"
+    ],
+    "homepage": "https://github.com/locomotivemtl/front-end-helpers/tree/main/packages/postcss-helpers-functions",
+    "devDependencies": {
+        "microbundle": "^0.15.1",
+        "npm-run-all": "^4.1.5",
+        "rimraf": "^6.0.1"
+    }
+}

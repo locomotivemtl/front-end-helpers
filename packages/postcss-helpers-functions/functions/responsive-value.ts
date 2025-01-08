@@ -4,19 +4,19 @@
  *
  * Example usage:
  * ```javascript
- * responsiveValue('30px', '60px', 1800);
+ * responsiveValue('30px', '60px', '1800px');
  * ```
  *
  * @param {string} minSize - The minimum font size in pixels (e.g., '30px').
  * @param {string} maxSize - The maximum font size in pixels (e.g., '60px').
- * @param {number} breakpoint - The maximum breakpoint (e.g., 1800 for 1800px).
+ * @param {string} breakpoint - The maximum breakpoint (e.g., '1800px').
  * @returns {string} - The CSS `clamp()` string for the responsive font size.
  */
-export type ResponsiveValue = (minSize: string, maxSize: string, breakpoint: number) => string;
+export type ResponsiveValue = (minSize: string, maxSize: string, breakpoint: string) => string;
 
 const responsiveValue: ResponsiveValue = (minSize, maxSize, breakpoint): string => {
     // Calculate delta as the ratio of max-size to breakpoint
-    const delta = parseFloat(maxSize) / breakpoint;
+    const delta = parseFloat(maxSize) / parseFloat(breakpoint);
 
     // Construct the `clamp()` function for responsive font size
     return `clamp(${minSize}, calc(${delta} * var(--vw, 1vw) * 100), ${maxSize})`;

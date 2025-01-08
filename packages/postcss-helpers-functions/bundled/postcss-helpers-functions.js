@@ -28,7 +28,7 @@
 
     var responsiveValue = function responsiveValue(minSize, maxSize, breakpoint) {
       // Calculate delta as the ratio of max-size to breakpoint
-      var delta = parseFloat(maxSize) / breakpoint;
+      var delta = parseFloat(maxSize) / parseFloat(breakpoint);
       // Construct the `clamp()` function for responsive font size
       return "clamp(" + minSize + ", calc(" + delta + " * var(--vw, 1vw) * 100), " + maxSize + ")";
     };

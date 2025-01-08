@@ -9,4 +9,4 @@
  * @param {number} percentage - The percentage of the viewport width.
  * @return {string} The calculated CSS value as a string.
  */
-export default function vw(percentage: any): string;
+export default function vw(percentage: number): string;

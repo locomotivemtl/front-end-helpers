@@ -12,5 +12,6 @@
  * @param {number} breakpoint - The maximum breakpoint (e.g., 1800 for 1800px).
  * @returns {string} - The CSS `clamp()` string for the responsive font size.
  */
-declare function responsiveValue(minSize: any, maxSize: any, breakpoint: any): string;
+export type ResponsiveValue = (minSize: string, maxSize: string, breakpoint: number) => string;
+declare const responsiveValue: ResponsiveValue;
 export default responsiveValue;

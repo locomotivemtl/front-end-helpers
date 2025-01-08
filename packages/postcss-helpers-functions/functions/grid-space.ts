@@ -14,10 +14,10 @@
  * @param {number} [inset=0] - An optional inset multiplier for the grid gutter (default is 0).
  * @returns {string} - The CSS `calc()` string for the grid spacing.
  */
-export default function gridSpace(percentage, inset = 0) {
+export default function gridSpace(percentage: number, inset: number = 0): string {
     return `calc(
-        ${percentage} * (calc(var(--vw, 1vw) * 100) - 2 * var(--grid-margin, 0px)) - 
-        (1 - ${percentage}) * var(--grid-gutter, 0px) + 
+        ${percentage} * (calc(var(--vw, 1vw) * 100) - 2 * var(--grid-margin, 0px)) -
+        (1 - ${percentage}) * var(--grid-gutter, 0px) +
         ${inset} * var(--grid-gutter, 0px)
     )`;
 }

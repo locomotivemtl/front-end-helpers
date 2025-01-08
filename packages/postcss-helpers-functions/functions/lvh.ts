@@ -9,6 +9,6 @@
  * @param {number} percentage - The percentage of the large viewport height.
  * @return {string} The calculated CSS value as a string.
  */
-export default function lvh(percentage) {
+export default function lvh(percentage: number): string {
     return `calc(${percentage} * var(--lvh, 1lvh))`;
 }

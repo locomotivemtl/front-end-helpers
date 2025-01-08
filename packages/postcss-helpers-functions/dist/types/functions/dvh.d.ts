@@ -9,4 +9,4 @@
  * @param {number} percentage - The percentage of the dynamic viewport height.
  * @return {string} The calculated CSS value as a string.
  */
-export default function dvh(percentage: any): string;
+export default function dvh(percentage: number): string;

@@ -9,6 +9,6 @@
  * @param {number} percentage - The percentage of the small viewport height.
  * @return {string} The calculated CSS value as a string.
  */
-export default function svh(percentage) {
+export default function svh(percentage : number) : string {
     return `calc(${percentage} * var(--svh, 1svh))`;
 }

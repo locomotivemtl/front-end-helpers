@@ -3,7 +3,7 @@
  * This function calculates the preferred font size based on the given minimum, maximum, and breakpoint values.
  *
  * Example usage:
- * ```javascript
+ * ```js
  * responsiveValue('30px', '60px', '1800px');
  * ```
  *

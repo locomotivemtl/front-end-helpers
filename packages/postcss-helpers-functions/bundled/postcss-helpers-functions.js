@@ -10,7 +10,7 @@
      * This function mimics the behavior of a Sass function and is suitable for use in PostCSS plugins.
      *
      * Example usage:
-     * ```javascript
+     * ```js
      * gridSpace(6/12); // Calculates a width based on 6/12 of the grid
      * gridSpace(1/12, 1); // Calculates with a gutter inset
      * ```

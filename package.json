@@ -4,7 +4,8 @@
     "description": "A toolkit for enhancing and optimizing Tailwind CSS workflow.",
     "type": "module",
     "workspaces": [
-        "packages/postcss-tailwind-shortcuts"
+        "packages/postcss-tailwind-shortcuts",
+        "packages/postcss-helpers-functions"
     ],
     "devDependencies": {
         "prettier": "^3.3.3",

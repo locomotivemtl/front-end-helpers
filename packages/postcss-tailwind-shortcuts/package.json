@@ -9,8 +9,8 @@
         "build:types": "tsc --allowJs -d --emitDeclarationOnly --declarationDir ./dist/types --removeComments ./index.ts",
         "build:dist": "microbundle build -i index.ts --o ./dist",
         "build:bundle": "npm-run-all build:bundle-full build:bundle-min",
-        "build:bundle-full": "microbundle build -i index.ts --o ./bundled/postcss-tailwind-shortcuts.js --no-sourcemap --no-pkg-main --external none --name PostCSSRemoveDoubleParentheses --format umd --no-compress",
-        "build:bundle-min": "microbundle build -i index.ts --o ./bundled/postcss-tailwind-shortcuts.min.js --no-sourcemap --no-pkg-main --external none --name PostCSSRemoveDoubleParentheses --format umd",
+        "build:bundle-full": "microbundle build -i index.ts --o ./bundled/postcss-tailwind-shortcuts.js --no-sourcemap --no-pkg-main --external none --name PostCSSTailwindShortcuts --format umd --no-compress",
+        "build:bundle-min": "microbundle build -i index.ts --o ./bundled/postcss-tailwind-shortcuts.min.js --no-sourcemap --no-pkg-main --external none --name PostCSSTailwindShortcuts --format umd",
         "watch": "microbundle watch -i index.ts --o ./dist --no-compress",
         "publish:beta": "npm publish --tag beta",
         "format": "prettier --write \"./**/*.{astro,js,ts,css,scss}\""

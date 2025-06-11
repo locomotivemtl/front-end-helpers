@@ -61,5 +61,8 @@
         "dom",
         "lifecycle",
         "performance"
-    ]
+    ],
+    "publishConfig": {
+        "access": "public"
+    }
 }

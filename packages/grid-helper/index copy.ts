@@ -260,3 +260,14 @@ export const getComponentCount = (): number => {
 
 // Initialize the bridge after all functions are defined  
 initializeWindowBridge();
+
+// Default export for convenience
+export default {
+    ComponentElement,
+    getComponentById,
+    getComponentsByPrototype,
+    findComponents,
+    getRegisteredPrototypes,
+    getComponentStats,
+    getComponentCount
+};

@@ -1,3 +1,6 @@
+/**
+ * Global window interface for component manager bridge
+ */
 declare global {
     interface Window {
         COMPONENT_MANAGER_DEBUG?: boolean;
@@ -11,16 +14,28 @@ declare global {
         };
     }
 }
+/**
+ * Improve TypeScript support
+ */
 export type ManagedComponent = HTMLElement & {
     prototypeType: string;
     id: string;
 };
+/**
+ * Base interface for components that can be used with getComponentById generic
+ */
 export interface ComponentLike extends Partial<ManagedComponent> {
     id: string;
 }
 export type ComponentElementType = InstanceType<ReturnType<typeof ComponentElement>> | ManagedComponent;
+/**
+ * Store to manage custom elements and their lifecycle
+ */
 export declare const $componentsManagerIncrement: import("nanostores").PreinitializedWritableAtom<number> & object;
 export declare const $componentsManager: import("nanostores").PreinitializedWritableAtom<ManagedComponent[]> & object;
+/**
+ * Class to create custom elements with management features
+ */
 export declare const ComponentElement: <BaseClass extends CustomElementConstructor>(Base: BaseClass, className: string) => {
     new (...args: any[]): {
         prototypeType: string;
@@ -37,7 +52,7 @@ export declare const ComponentElement: <BaseClass extends CustomElementConstruct
         lang: string;
         readonly offsetHeight: number;
         readonly offsetLeft: number;
-        readonly offsetParent: Element | null;
+        readonly offsetParent: Element;
         readonly offsetTop: number;
         readonly offsetWidth: number;
         outerText: string;
@@ -46,10 +61,10 @@ export declare const ComponentElement: <BaseClass extends CustomElementConstruct
         translate: boolean;
         attachInternals(): ElementInternals;
         click(): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions | undefined): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions | undefined): void;
-        removeEventListener<K_1 extends keyof HTMLElementEventMap>(type: K_1, listener: (this: HTMLElement, ev: HTMLElementEventMap[K_1]) => any, options?: boolean | EventListenerOptions | undefined): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions | undefined): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K_1 extends keyof HTMLElementEventMap>(type: K_1, listener: (this: HTMLElement, ev: HTMLElementEventMap[K_1]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
         readonly attributes: NamedNodeMap;
         readonly classList: DOMTokenList;
         className: string;
@@ -59,29 +74,29 @@ export declare const ComponentElement: <BaseClass extends CustomElementConstruct
         readonly clientWidth: number;
         id: string;
         readonly localName: string;
-        readonly namespaceURI: string | null;
-        onfullscreenchange: ((this: Element, ev: Event) => any) | null;
-        onfullscreenerror: ((this: Element, ev: Event) => any) | null;
+        readonly namespaceURI: string;
+        onfullscreenchange: (this: Element, ev: Event) => any;
+        onfullscreenerror: (this: Element, ev: Event) => any;
         outerHTML: string;
         readonly ownerDocument: Document;
         readonly part: DOMTokenList;
-        readonly prefix: string | null;
+        readonly prefix: string;
         readonly scrollHeight: number;
         scrollLeft: number;
         scrollTop: number;
         readonly scrollWidth: number;
-        readonly shadowRoot: ShadowRoot | null;
+        readonly shadowRoot: ShadowRoot;
         slot: string;
         readonly tagName: string;
         attachShadow(init: ShadowRootInit): ShadowRoot;
-        closest<K_2 extends keyof HTMLElementTagNameMap>(selector: K_2): HTMLElementTagNameMap[K_2] | null;
-        closest<K_3 extends keyof SVGElementTagNameMap>(selector: K_3): SVGElementTagNameMap[K_3] | null;
-        closest<E extends Element = Element>(selectors: string): E | null;
-        getAttribute(qualifiedName: string): string | null;
-        getAttributeNS(namespace: string | null, localName: string): string | null;
+        closest<K_2 extends keyof HTMLElementTagNameMap>(selector: K_2): HTMLElementTagNameMap[K_2];
+        closest<K_3 extends keyof SVGElementTagNameMap>(selector: K_3): SVGElementTagNameMap[K_3];
+        closest<E extends Element = Element>(selectors: string): E;
+        getAttribute(qualifiedName: string): string;
+        getAttributeNS(namespace: string, localName: string): string;
         getAttributeNames(): string[];
-        getAttributeNode(qualifiedName: string): Attr | null;
-        getAttributeNodeNS(namespace: string | null, localName: string): Attr | null;
+        getAttributeNode(qualifiedName: string): Attr;
+        getAttributeNodeNS(namespace: string, localName: string): Attr;
         getBoundingClientRect(): DOMRect;
         getClientRects(): DOMRectList;
         getElementsByClassName(classNames: string): HTMLCollectionOf<Element>;
@@ -90,60 +105,60 @@ export declare const ComponentElement: <BaseClass extends CustomElementConstruct
         getElementsByTagName(qualifiedName: string): HTMLCollectionOf<Element>;
         getElementsByTagNameNS(namespaceURI: "http://www.w3.org/1999/xhtml", localName: string): HTMLCollectionOf<HTMLElement>;
         getElementsByTagNameNS(namespaceURI: "http://www.w3.org/2000/svg", localName: string): HTMLCollectionOf<SVGElement>;
-        getElementsByTagNameNS(namespace: string | null, localName: string): HTMLCollectionOf<Element>;
+        getElementsByTagNameNS(namespace: string, localName: string): HTMLCollectionOf<Element>;
         hasAttribute(qualifiedName: string): boolean;
-        hasAttributeNS(namespace: string | null, localName: string): boolean;
+        hasAttributeNS(namespace: string, localName: string): boolean;
         hasAttributes(): boolean;
         hasPointerCapture(pointerId: number): boolean;
-        insertAdjacentElement(where: InsertPosition, element: Element): Element | null;
+        insertAdjacentElement(where: InsertPosition, element: Element): Element;
         insertAdjacentHTML(position: InsertPosition, text: string): void;
         insertAdjacentText(where: InsertPosition, data: string): void;
         matches(selectors: string): boolean;
         releasePointerCapture(pointerId: number): void;
         removeAttribute(qualifiedName: string): void;
-        removeAttributeNS(namespace: string | null, localName: string): void;
+        removeAttributeNS(namespace: string, localName: string): void;
         removeAttributeNode(attr: Attr): Attr;
-        requestFullscreen(options?: FullscreenOptions | undefined): Promise<void>;
+        requestFullscreen(options?: FullscreenOptions): Promise<void>;
         requestPointerLock(): void;
-        scroll(options?: ScrollToOptions | undefined): void;
+        scroll(options?: ScrollToOptions): void;
         scroll(x: number, y: number): void;
-        scrollBy(options?: ScrollToOptions | undefined): void;
+        scrollBy(options?: ScrollToOptions): void;
         scrollBy(x: number, y: number): void;
-        scrollIntoView(arg?: boolean | ScrollIntoViewOptions | undefined): void;
-        scrollTo(options?: ScrollToOptions | undefined): void;
+        scrollIntoView(arg?: boolean | ScrollIntoViewOptions): void;
+        scrollTo(options?: ScrollToOptions): void;
         scrollTo(x: number, y: number): void;
         setAttribute(qualifiedName: string, value: string): void;
-        setAttributeNS(namespace: string | null, qualifiedName: string, value: string): void;
-        setAttributeNode(attr: Attr): Attr | null;
-        setAttributeNodeNS(attr: Attr): Attr | null;
+        setAttributeNS(namespace: string, qualifiedName: string, value: string): void;
+        setAttributeNode(attr: Attr): Attr;
+        setAttributeNodeNS(attr: Attr): Attr;
         setPointerCapture(pointerId: number): void;
-        toggleAttribute(qualifiedName: string, force?: boolean | undefined): boolean;
+        toggleAttribute(qualifiedName: string, force?: boolean): boolean;
         webkitMatchesSelector(selectors: string): boolean;
         readonly baseURI: string;
         readonly childNodes: NodeListOf<ChildNode>;
-        readonly firstChild: ChildNode | null;
+        readonly firstChild: ChildNode;
         readonly isConnected: boolean;
-        readonly lastChild: ChildNode | null;
-        readonly nextSibling: ChildNode | null;
+        readonly lastChild: ChildNode;
+        readonly nextSibling: ChildNode;
         readonly nodeName: string;
         readonly nodeType: number;
-        nodeValue: string | null;
-        readonly parentElement: HTMLElement | null;
-        readonly parentNode: ParentNode | null;
-        readonly previousSibling: ChildNode | null;
-        textContent: string | null;
+        nodeValue: string;
+        readonly parentElement: HTMLElement;
+        readonly parentNode: ParentNode;
+        readonly previousSibling: ChildNode;
+        textContent: string;
         appendChild<T extends Node>(node: T): T;
-        cloneNode(deep?: boolean | undefined): Node;
+        cloneNode(deep?: boolean): Node;
         compareDocumentPosition(other: Node): number;
-        contains(other: Node | null): boolean;
-        getRootNode(options?: GetRootNodeOptions | undefined): Node;
+        contains(other: Node): boolean;
+        getRootNode(options?: GetRootNodeOptions): Node;
         hasChildNodes(): boolean;
-        insertBefore<T_1 extends Node>(node: T_1, child: Node | null): T_1;
-        isDefaultNamespace(namespace: string | null): boolean;
-        isEqualNode(otherNode: Node | null): boolean;
-        isSameNode(otherNode: Node | null): boolean;
-        lookupNamespaceURI(prefix: string | null): string | null;
-        lookupPrefix(namespace: string | null): string | null;
+        insertBefore<T_1 extends Node>(node: T_1, child: Node): T_1;
+        isDefaultNamespace(namespace: string): boolean;
+        isEqualNode(otherNode: Node): boolean;
+        isSameNode(otherNode: Node): boolean;
+        lookupNamespaceURI(prefix: string): string;
+        lookupPrefix(namespace: string): string;
         normalize(): void;
         removeChild<T_2 extends Node>(child: T_2): T_2;
         replaceChild<T_3 extends Node>(node: Node, child: T_3): T_3;
@@ -166,179 +181,211 @@ export declare const ComponentElement: <BaseClass extends CustomElementConstruct
         readonly PROCESSING_INSTRUCTION_NODE: number;
         readonly TEXT_NODE: number;
         dispatchEvent(event: Event): boolean;
-        ariaAtomic: string | null;
-        ariaAutoComplete: string | null;
-        ariaBusy: string | null;
-        ariaChecked: string | null;
-        ariaColCount: string | null;
-        ariaColIndex: string | null;
-        ariaColIndexText: string | null;
-        ariaColSpan: string | null;
-        ariaCurrent: string | null;
-        ariaDisabled: string | null;
-        ariaExpanded: string | null;
-        ariaHasPopup: string | null;
-        ariaHidden: string | null;
-        ariaInvalid: string | null;
-        ariaKeyShortcuts: string | null;
-        ariaLabel: string | null;
-        ariaLevel: string | null;
-        ariaLive: string | null;
-        ariaModal: string | null;
-        ariaMultiLine: string | null;
-        ariaMultiSelectable: string | null;
-        ariaOrientation: string | null;
-        ariaPlaceholder: string | null;
-        ariaPosInSet: string | null;
-        ariaPressed: string | null;
-        ariaReadOnly: string | null;
-        ariaRequired: string | null;
-        ariaRoleDescription: string | null;
-        ariaRowCount: string | null;
-        ariaRowIndex: string | null;
-        ariaRowIndexText: string | null;
-        ariaRowSpan: string | null;
-        ariaSelected: string | null;
-        ariaSetSize: string | null;
-        ariaSort: string | null;
-        ariaValueMax: string | null;
-        ariaValueMin: string | null;
-        ariaValueNow: string | null;
-        ariaValueText: string | null;
-        role: string | null;
-        animate(keyframes: Keyframe[] | PropertyIndexedKeyframes | null, options?: number | KeyframeAnimationOptions | undefined): Animation;
-        getAnimations(options?: GetAnimationsOptions | undefined): Animation[];
+        ariaAtomic: string;
+        ariaAutoComplete: string;
+        ariaBusy: string;
+        ariaChecked: string;
+        ariaColCount: string;
+        ariaColIndex: string;
+        ariaColIndexText: string;
+        ariaColSpan: string;
+        ariaCurrent: string;
+        ariaDisabled: string;
+        ariaExpanded: string;
+        ariaHasPopup: string;
+        ariaHidden: string;
+        ariaInvalid: string;
+        ariaKeyShortcuts: string;
+        ariaLabel: string;
+        ariaLevel: string;
+        ariaLive: string;
+        ariaModal: string;
+        ariaMultiLine: string;
+        ariaMultiSelectable: string;
+        ariaOrientation: string;
+        ariaPlaceholder: string;
+        ariaPosInSet: string;
+        ariaPressed: string;
+        ariaReadOnly: string;
+        ariaRequired: string;
+        ariaRoleDescription: string;
+        ariaRowCount: string;
+        ariaRowIndex: string;
+        ariaRowIndexText: string;
+        ariaRowSpan: string;
+        ariaSelected: string;
+        ariaSetSize: string;
+        ariaSort: string;
+        ariaValueMax: string;
+        ariaValueMin: string;
+        ariaValueNow: string;
+        ariaValueText: string;
+        role: string;
+        animate(keyframes: Keyframe[] | PropertyIndexedKeyframes, options?: number | KeyframeAnimationOptions): Animation;
+        getAnimations(options?: GetAnimationsOptions): Animation[];
         after(...nodes: (string | Node)[]): void;
         before(...nodes: (string | Node)[]): void;
         remove(): void;
         replaceWith(...nodes: (string | Node)[]): void;
         innerHTML: string;
-        readonly nextElementSibling: Element | null;
-        readonly previousElementSibling: Element | null;
+        readonly nextElementSibling: Element;
+        readonly previousElementSibling: Element;
         readonly childElementCount: number;
         readonly children: HTMLCollection;
-        readonly firstElementChild: Element | null;
-        readonly lastElementChild: Element | null;
+        readonly firstElementChild: Element;
+        readonly lastElementChild: Element;
         append(...nodes: (string | Node)[]): void;
         prepend(...nodes: (string | Node)[]): void;
-        querySelector<K_6 extends keyof HTMLElementTagNameMap>(selectors: K_6): HTMLElementTagNameMap[K_6] | null;
-        querySelector<K_7 extends keyof SVGElementTagNameMap>(selectors: K_7): SVGElementTagNameMap[K_7] | null;
-        querySelector<E_1 extends Element = Element>(selectors: string): E_1 | null;
+        querySelector<K_6 extends keyof HTMLElementTagNameMap>(selectors: K_6): HTMLElementTagNameMap[K_6];
+        querySelector<K_7 extends keyof SVGElementTagNameMap>(selectors: K_7): SVGElementTagNameMap[K_7];
+        querySelector<E_1 extends Element = Element>(selectors: string): E_1;
         querySelectorAll<K_8 extends keyof HTMLElementTagNameMap>(selectors: K_8): NodeListOf<HTMLElementTagNameMap[K_8]>;
         querySelectorAll<K_9 extends keyof SVGElementTagNameMap>(selectors: K_9): NodeListOf<SVGElementTagNameMap[K_9]>;
         querySelectorAll<E_2 extends Element = Element>(selectors: string): NodeListOf<E_2>;
         replaceChildren(...nodes: (string | Node)[]): void;
-        readonly assignedSlot: HTMLSlotElement | null;
-        oncopy: ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null;
-        oncut: ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null;
-        onpaste: ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null;
+        readonly assignedSlot: HTMLSlotElement;
+        oncopy: (this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any;
+        oncut: (this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any;
+        onpaste: (this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any;
         readonly style: CSSStyleDeclaration;
         contentEditable: string;
         enterKeyHint: string;
         inputMode: string;
         readonly isContentEditable: boolean;
-        onabort: ((this: GlobalEventHandlers, ev: UIEvent) => any) | null;
-        onanimationcancel: ((this: GlobalEventHandlers, ev: AnimationEvent) => any) | null;
-        onanimationend: ((this: GlobalEventHandlers, ev: AnimationEvent) => any) | null;
-        onanimationiteration: ((this: GlobalEventHandlers, ev: AnimationEvent) => any) | null;
-        onanimationstart: ((this: GlobalEventHandlers, ev: AnimationEvent) => any) | null;
-        onauxclick: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null;
-        onbeforeinput: ((this: GlobalEventHandlers, ev: InputEvent) => any) | null;
-        onblur: ((this: GlobalEventHandlers, ev: FocusEvent) => any) | null;
-        oncancel: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        oncanplay: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        oncanplaythrough: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onchange: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onclick: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null;
-        onclose: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        oncontextmenu: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null;
-        oncuechange: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        ondblclick: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null;
-        ondrag: ((this: GlobalEventHandlers, ev: DragEvent) => any) | null;
-        ondragend: ((this: GlobalEventHandlers, ev: DragEvent) => any) | null;
-        ondragenter: ((this: GlobalEventHandlers, ev: DragEvent) => any) | null;
-        ondragleave: ((this: GlobalEventHandlers, ev: DragEvent) => any) | null;
-        ondragover: ((this: GlobalEventHandlers, ev: DragEvent) => any) | null;
-        ondragstart: ((this: GlobalEventHandlers, ev: DragEvent) => any) | null;
-        ondrop: ((this: GlobalEventHandlers, ev: DragEvent) => any) | null;
-        ondurationchange: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onemptied: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onended: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onerror: OnErrorEventHandler;
-        onfocus: ((this: GlobalEventHandlers, ev: FocusEvent) => any) | null;
-        onformdata: ((this: GlobalEventHandlers, ev: FormDataEvent) => any) | null;
-        ongotpointercapture: ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null;
-        oninput: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        oninvalid: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onkeydown: ((this: GlobalEventHandlers, ev: KeyboardEvent) => any) | null;
-        onkeypress: ((this: GlobalEventHandlers, ev: KeyboardEvent) => any) | null;
-        onkeyup: ((this: GlobalEventHandlers, ev: KeyboardEvent) => any) | null;
-        onload: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onloadeddata: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onloadedmetadata: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onloadstart: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onlostpointercapture: ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null;
-        onmousedown: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null;
-        onmouseenter: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null;
-        onmouseleave: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null;
-        onmousemove: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null;
-        onmouseout: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null;
-        onmouseover: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null;
-        onmouseup: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null;
-        onpause: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onplay: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onplaying: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onpointercancel: ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null;
-        onpointerdown: ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null;
-        onpointerenter: ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null;
-        onpointerleave: ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null;
-        onpointermove: ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null;
-        onpointerout: ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null;
-        onpointerover: ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null;
-        onpointerup: ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null;
-        onprogress: ((this: GlobalEventHandlers, ev: ProgressEvent<EventTarget>) => any) | null;
-        onratechange: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onreset: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onresize: ((this: GlobalEventHandlers, ev: UIEvent) => any) | null;
-        onscroll: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onsecuritypolicyviolation: ((this: GlobalEventHandlers, ev: SecurityPolicyViolationEvent) => any) | null;
-        onseeked: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onseeking: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onselect: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onselectionchange: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onselectstart: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onslotchange: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onstalled: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onsubmit: ((this: GlobalEventHandlers, ev: SubmitEvent) => any) | null;
-        onsuspend: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        ontimeupdate: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        ontoggle: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        ontouchcancel?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
-        ontouchend?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
-        ontouchmove?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
-        ontouchstart?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
-        ontransitioncancel: ((this: GlobalEventHandlers, ev: TransitionEvent) => any) | null;
-        ontransitionend: ((this: GlobalEventHandlers, ev: TransitionEvent) => any) | null;
-        ontransitionrun: ((this: GlobalEventHandlers, ev: TransitionEvent) => any) | null;
-        ontransitionstart: ((this: GlobalEventHandlers, ev: TransitionEvent) => any) | null;
-        onvolumechange: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onwaiting: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onwebkitanimationend: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onwebkitanimationiteration: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onwebkitanimationstart: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onwebkittransitionend: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onwheel: ((this: GlobalEventHandlers, ev: WheelEvent) => any) | null;
+        onabort: (this: GlobalEventHandlers, ev: UIEvent) => any;
+        onanimationcancel: (this: GlobalEventHandlers, ev: AnimationEvent) => any;
+        onanimationend: (this: GlobalEventHandlers, ev: AnimationEvent) => any;
+        onanimationiteration: (this: GlobalEventHandlers, ev: AnimationEvent) => any;
+        onanimationstart: (this: GlobalEventHandlers, ev: AnimationEvent) => any;
+        onauxclick: (this: GlobalEventHandlers, ev: MouseEvent) => any;
+        onbeforeinput: (this: GlobalEventHandlers, ev: InputEvent) => any;
+        onblur: (this: GlobalEventHandlers, ev: FocusEvent) => any;
+        oncancel: (this: GlobalEventHandlers, ev: Event) => any;
+        oncanplay: (this: GlobalEventHandlers, ev: Event) => any;
+        oncanplaythrough: (this: GlobalEventHandlers, ev: Event) => any;
+        onchange: (this: GlobalEventHandlers, ev: Event) => any;
+        onclick: (this: GlobalEventHandlers, ev: MouseEvent) => any;
+        onclose: (this: GlobalEventHandlers, ev: Event) => any;
+        oncontextmenu: (this: GlobalEventHandlers, ev: MouseEvent) => any;
+        oncuechange: (this: GlobalEventHandlers, ev: Event) => any;
+        ondblclick: (this: GlobalEventHandlers, ev: MouseEvent) => any;
+        ondrag: (this: GlobalEventHandlers, ev: DragEvent) => any;
+        ondragend: (this: GlobalEventHandlers, ev: DragEvent) => any;
+        ondragenter: (this: GlobalEventHandlers, ev: DragEvent) => any;
+        ondragleave: (this: GlobalEventHandlers, ev: DragEvent) => any;
+        ondragover: (this: GlobalEventHandlers, ev: DragEvent) => any;
+        ondragstart: (this: GlobalEventHandlers, ev: DragEvent) => any;
+        ondrop: (this: GlobalEventHandlers, ev: DragEvent) => any;
+        ondurationchange: (this: GlobalEventHandlers, ev: Event) => any;
+        onemptied: (this: GlobalEventHandlers, ev: Event) => any;
+        onended: (this: GlobalEventHandlers, ev: Event) => any;
+        onerror: OnErrorEventHandlerNonNull;
+        onfocus: (this: GlobalEventHandlers, ev: FocusEvent) => any;
+        onformdata: (this: GlobalEventHandlers, ev: FormDataEvent) => any;
+        ongotpointercapture: (this: GlobalEventHandlers, ev: PointerEvent) => any;
+        oninput: (this: GlobalEventHandlers, ev: Event) => any;
+        oninvalid: (this: GlobalEventHandlers, ev: Event) => any;
+        onkeydown: (this: GlobalEventHandlers, ev: KeyboardEvent) => any;
+        onkeypress: (this: GlobalEventHandlers, ev: KeyboardEvent) => any;
+        onkeyup: (this: GlobalEventHandlers, ev: KeyboardEvent) => any;
+        onload: (this: GlobalEventHandlers, ev: Event) => any;
+        onloadeddata: (this: GlobalEventHandlers, ev: Event) => any;
+        onloadedmetadata: (this: GlobalEventHandlers, ev: Event) => any;
+        onloadstart: (this: GlobalEventHandlers, ev: Event) => any;
+        onlostpointercapture: (this: GlobalEventHandlers, ev: PointerEvent) => any;
+        onmousedown: (this: GlobalEventHandlers, ev: MouseEvent) => any;
+        onmouseenter: (this: GlobalEventHandlers, ev: MouseEvent) => any;
+        onmouseleave: (this: GlobalEventHandlers, ev: MouseEvent) => any;
+        onmousemove: (this: GlobalEventHandlers, ev: MouseEvent) => any;
+        onmouseout: (this: GlobalEventHandlers, ev: MouseEvent) => any;
+        onmouseover: (this: GlobalEventHandlers, ev: MouseEvent) => any;
+        onmouseup: (this: GlobalEventHandlers, ev: MouseEvent) => any;
+        onpause: (this: GlobalEventHandlers, ev: Event) => any;
+        onplay: (this: GlobalEventHandlers, ev: Event) => any;
+        onplaying: (this: GlobalEventHandlers, ev: Event) => any;
+        onpointercancel: (this: GlobalEventHandlers, ev: PointerEvent) => any;
+        onpointerdown: (this: GlobalEventHandlers, ev: PointerEvent) => any;
+        onpointerenter: (this: GlobalEventHandlers, ev: PointerEvent) => any;
+        onpointerleave: (this: GlobalEventHandlers, ev: PointerEvent) => any;
+        onpointermove: (this: GlobalEventHandlers, ev: PointerEvent) => any;
+        onpointerout: (this: GlobalEventHandlers, ev: PointerEvent) => any;
+        onpointerover: (this: GlobalEventHandlers, ev: PointerEvent) => any;
+        onpointerup: (this: GlobalEventHandlers, ev: PointerEvent) => any;
+        onprogress: (this: GlobalEventHandlers, ev: ProgressEvent<EventTarget>) => any;
+        onratechange: (this: GlobalEventHandlers, ev: Event) => any;
+        onreset: (this: GlobalEventHandlers, ev: Event) => any;
+        onresize: (this: GlobalEventHandlers, ev: UIEvent) => any;
+        onscroll: (this: GlobalEventHandlers, ev: Event) => any;
+        onsecuritypolicyviolation: (this: GlobalEventHandlers, ev: SecurityPolicyViolationEvent) => any;
+        onseeked: (this: GlobalEventHandlers, ev: Event) => any;
+        onseeking: (this: GlobalEventHandlers, ev: Event) => any;
+        onselect: (this: GlobalEventHandlers, ev: Event) => any;
+        onselectionchange: (this: GlobalEventHandlers, ev: Event) => any;
+        onselectstart: (this: GlobalEventHandlers, ev: Event) => any;
+        onslotchange: (this: GlobalEventHandlers, ev: Event) => any;
+        onstalled: (this: GlobalEventHandlers, ev: Event) => any;
+        onsubmit: (this: GlobalEventHandlers, ev: SubmitEvent) => any;
+        onsuspend: (this: GlobalEventHandlers, ev: Event) => any;
+        ontimeupdate: (this: GlobalEventHandlers, ev: Event) => any;
+        ontoggle: (this: GlobalEventHandlers, ev: Event) => any;
+        ontouchcancel?: (this: GlobalEventHandlers, ev: TouchEvent) => any;
+        ontouchend?: (this: GlobalEventHandlers, ev: TouchEvent) => any;
+        ontouchmove?: (this: GlobalEventHandlers, ev: TouchEvent) => any;
+        ontouchstart?: (this: GlobalEventHandlers, ev: TouchEvent) => any;
+        ontransitioncancel: (this: GlobalEventHandlers, ev: TransitionEvent) => any;
+        ontransitionend: (this: GlobalEventHandlers, ev: TransitionEvent) => any;
+        ontransitionrun: (this: GlobalEventHandlers, ev: TransitionEvent) => any;
+        ontransitionstart: (this: GlobalEventHandlers, ev: TransitionEvent) => any;
+        onvolumechange: (this: GlobalEventHandlers, ev: Event) => any;
+        onwaiting: (this: GlobalEventHandlers, ev: Event) => any;
+        onwebkitanimationend: (this: GlobalEventHandlers, ev: Event) => any;
+        onwebkitanimationiteration: (this: GlobalEventHandlers, ev: Event) => any;
+        onwebkitanimationstart: (this: GlobalEventHandlers, ev: Event) => any;
+        onwebkittransitionend: (this: GlobalEventHandlers, ev: Event) => any;
+        onwheel: (this: GlobalEventHandlers, ev: WheelEvent) => any;
         autofocus: boolean;
         readonly dataset: DOMStringMap;
-        nonce?: string | undefined;
+        nonce?: string;
         tabIndex: number;
         blur(): void;
-        focus(options?: FocusOptions | undefined): void;
+        focus(options?: FocusOptions): void;
     };
 } & BaseClass;
-export declare const getComponentById: <T extends ComponentLike = ManagedComponent>(id: string) => T | undefined;
+/**
+ * Get a component by its unique ID with improved type safety
+ */
+export declare const getComponentById: <T extends ComponentLike = ManagedComponent>(id: string) => T;
+/**
+ * Get all components of a specific prototype, with optional exclusion filters
+ * Includes performance optimization with caching for frequently called queries
+ */
 export declare const getComponentsByPrototype: (prototype: string, selectorsToExclude?: string[] | string | HTMLElement | ManagedComponent) => ManagedComponent[];
-export declare const findComponents: (predicate: ($component: ManagedComponent) => boolean) => ManagedComponent[];
+/**
+ * Find components using a custom predicate function
+ * @param predicate - Function that returns true for components to include
+ * @returns Array of matching components
+ *
+ * @example
+ * // Find components with specific attributes
+ * const activeComponents = findComponents($component => $component.hasAttribute('active'));
+ *
+ * // Find components by custom criteria
+ * const openDialogs = findComponents(comp =>
+ *   comp.prototypeType === 'Dialog' && comp.hasAttribute('open')
+ * );
+ */
+export declare const findComponents: (predicate: (component: ManagedComponent) => boolean) => ManagedComponent[];
+/**
+ * Get all registered prototype types
+ * @returns Array of unique prototype names
+ */
 export declare const getRegisteredPrototypes: () => string[];
+/**
+ * Get component statistics
+ * @returns Object with component counts by prototype
+ */
 export declare const getComponentStats: () => Record<string, number>;
+/**
+ * Get the total number of managed components
+ */
 export declare const getComponentCount: () => number;

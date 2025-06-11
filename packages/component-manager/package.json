@@ -31,11 +31,11 @@
     "scripts": {
         "clean": "rimraf dist bundled",
         "build": "npm run clean && npm-run-all --parallel build:dist build:bundle build:types",
-        "build:types": "tsc",
+        "build:types": "tsc --allowJs -d --emitDeclarationOnly --declarationDir ./dist/types --removeComments --skipLibCheck --moduleResolution node --esModuleInterop --target ES2018 ./index.ts",
         "build:dist": "microbundle build -i index.ts --o ./dist",
         "build:bundle": "npm-run-all build:bundle-full build:bundle-min",
-        "build:bundle-full": "microbundle build -i index.ts --o ./bundled/component-manager.js --no-sourcemap --no-pkg-main --external none --name ComponentManager --format umd --no-compress",
-        "build:bundle-min": "microbundle build -i index.ts --o ./bundled/component-manager.min.js --no-sourcemap --no-pkg-main --external none --name ComponentManager --format umd",
+        "build:bundle-full": "microbundle build -i index.ts --o ./bundled/component-manager.js --no-sourcemap --no-pkg-main --name ComponentManager --format umd --no-compress",
+        "build:bundle-min": "microbundle build -i index.ts --o ./bundled/component-manager.min.js --no-sourcemap --no-pkg-main --name ComponentManager --format umd",
         "watch": "microbundle watch -i index.ts --o ./dist --no-compress",
         "publish:beta": "npm publish --tag beta",
         "format": "prettier --write \"./**/*.{astro,js,ts,css,scss}\""
@@ -46,7 +46,7 @@
     ],
     "homepage": "https://github.com/locomotivemtl/front-end-helpers/tree/main/packages/component-manager",
     "dependencies": {
-        "nanostores": "^0.11.3"
+        "nanostores": "^1.0.1"
     },
     "devDependencies": {
         "microbundle": "^0.15.1",

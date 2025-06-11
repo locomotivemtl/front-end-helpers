@@ -49,6 +49,15 @@ customElements.define('c-accordion', ComponentElement(Accordion, 'Accordion'), {
 </details>
 ```
 
+> **⚠️ Safari Compatibility Note**  
+> The `is` attribute for extending built-in elements is **not supported in Safari**. For better cross-browser compatibility, consider using autonomous custom elements instead:
+> ```html
+> <c-accordion>
+>     <summary>Click me</summary>
+>     <p>This is an accordion content!</p>
+> </c-accordion>
+> ```
+
 ### 2. Access Components Programmatically
 
 ```typescript

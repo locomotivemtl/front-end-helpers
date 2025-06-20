@@ -1,156 +1,157 @@
 # PostCSS Tailwind Shortcuts
 
-PostCSS plugin that provides a set of shortcut functions for Tailwind CSS declarations. This plugin helps you write cleaner and more concise CSS by allowing you to use custom functions to reference Tailwind configuration values.
+PostCSS plugin that scans your CSS declarations and looks for function calls that match the configured shortcuts. When it finds a match, it replaces the function call with a CSS variable reference that follows Tailwind v4's naming conventions. Works with both Tailwind and custom CSS files.
 
-## Installtion 
+For example:
 
-```
+-   `speed(slow)` becomes `var(--transition-duration-slow)`
+-   `colorCode('primary')` becomes `var(--color-primary)`
+
+## Installation
+
+```bash
 npm install @locomotivemtl/postcss-tailwind-shortcuts --save-dev
 ```
 
 ## Usage
 
-To use this plugin, include it in your PostCSS configuration file and provide your Tailwind theme configuration.
+To use this plugin, include it in your PostCSS configuration file.
 
+### Basic Configuration
 
-### Example Configuration
-
-1. PostCSS Configuration (`postcss.config.js`):
-
-```js
-import postcssTailwindShortcuts from '@locomotivemtl/postcss-tailwind-shortcuts';
-import tailwindConfig from './tailwind.config.js';
-
-export default {
-    plugins: [
-        postcssTailwindShortcuts(tailwindConfig.theme)
-    ]
-};
-```
-
-2. Tailwind Configuration (`tailwind.config.js`):
-
-```js
-export default {
-    theme: {
-        extend: {
-            transitionDuration: {
-                // Define your custom values here
-                fast:       '0.2s',
-                default:    '0.4s',
-                slow:       '0.6s',
-                slower:     '0.8s',
-                slowest:    '1s',
-            },
-            transitionTimingFunction: {
-                // Define your custom values here
-                default: 'cubic-bezier(0.380, 0.005, 0.215, 1)',
-                inOut: 'cubic-bezier(0.455, 0.030, 0.515, 0.955)',
-            },
-            zIndex: {
-                // Define your custom values here
-            },
-            colors: {
-                // Define your custom values here
-            },
-            spacing: {
-                // Define your custom values here
-            }
-        }
-    }
-};
-```
-
-## Options
-
-| Option | Type   | Description                                      |
-|--------|--------|--------------------------------------------------|
-| `prefix` | `string` | A string appended before the shortcut function   |
-
-### Prefix
-
-> [!TIP]
-> Sometimes, SASS uses reserved expressions, meaning we can't create a shortcut with the same name. This happened recently with the `color` module, which prevents the use of a `color()` shortcut. In such cases, it's better to prefix all shortcuts with a string of your choice.
-
-The prefix will be appended before a hyphen (`-`).
+PostCSS Configuration:
 
 ```js
 import postcssTailwindShortcuts from '@locomotivemtl/postcss-tailwind-shortcuts';
-import tailwindConfig from './tailwind.config.js';
+
+export default {
+    plugins: [postcssTailwindShortcuts()]
+};
+```
+
+### With Custom Shortcuts
+
+You can add your own custom shortcuts by passing them in the options:
+
+```js
+import postcssTailwindShortcuts from '@locomotivemtl/postcss-tailwind-shortcuts';
 
 export default {
     plugins: [
-        postcssTailwindShortcuts(tailwindConfig.theme, {
-            prefix: 'theme'
+        postcssTailwindShortcuts({
+            shortcuts: [
+                {
+                    functionIdent: 'shadow',
+                    cssVariablePrefix: '--shadow'
+                },
+                {
+                    functionIdent: 'radius',
+                    cssVariablePrefix: '--radius'
+                }
+            ]
         })
     ]
 };
 ```
 
-This will create for example `theme-color()`.
+And set them in your Tailwind theme configuration:
 
-## Shortcut Functions
+```css
+/* Using Tailwind @theme directive */
+@theme {
+    --shadow-large: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --radius-medium: 0.375rem;
+}
+```
 
-This plugin supports the following shortcut functions, which can be used in your CSS declarations to reference Tailwind configuration values:
+## Options
 
-- `speed(value)`: Maps to `transitionDuration`
-- `ease(value)`: Maps to `transitionTimingFunction`
-- `z(value)`: Maps to `zIndex`
-- `color(value)`: Maps to `colors`
-- `spacing(value)`: Maps to `spacing`
+| Option      | Type    | Description                                                                              |
+| ----------- | ------- | ---------------------------------------------------------------------------------------- |
+| `shortcuts` | `Array` | Array of custom shortcut objects with `functionIdent` and `cssVariablePrefix` properties |
 
-### Example Usage
+### Shortcut Object Structure
+
+Each shortcut object should have:
+
+-   `functionIdent`: The function name to use in CSS (e.g., `'shadow'`)
+-   `cssVariablePrefix`: The CSS variable prefix (e.g., `'--shadow'`)
+
+## Default Shortcut Functions
+
+This plugin comes with the following pre-configured shortcuts that are based on **Tailwind CSS v4's variable naming conventions**:
+
+-   `speed(value)`: Converts to `var(--transition-duration-{value})`
+-   `ease(value)`: Converts to `var(--ease-{value})`
+-   `z(value)`: Converts to `var(--z-index-{value})`
+-   `colorCode(value)`: Converts to `var(--color-{value})`
+-   `spacing(value)`: Converts to `var(--spacing-{value})`
+
+These shortcuts are designed to work with Tailwind CSS v4's CSS variable system, where design tokens are exposed as CSS custom properties.
+
+## Example Usage
+
+### Basic Examples
 
 ```css
 /* Input CSS */
 .example {
-    transition-duration: speed();
-    transition-timing-function: ease('inOut');
-    z-index: z('modal');
-    color: color('accent');
-    margin: spacing('4');
+    transition-duration: speed(slow);
+    transition-timing-function: ease(fast);
+    z-index: z(modal);
+    color: colorCode(primary);
+    margin: spacing(4);
 }
 
 /* Output CSS */
 .example {
-    transition-duration: 200ms; /* Assuming 'fast' is 200ms in Tailwind config */
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); /* Assuming 'inOut' is a cubic-bezier value in Tailwind config */
-    z-index: 100; /* Assuming 'modal' is defined in Tailwind config */
-    color: #3b82f6; /* Assuming 'accent' is #3b82f6 in Tailwind config */
-    margin: 1rem; /* Assuming '4' is 1rem in Tailwind config */
+    transition-duration: var(--transition-duration-slow);
+    transition-timing-function: var(--ease-fast);
+    z-index: var(--z-index-modal);
+    color: var(--color-primary);
+    margin: var(--spacing-4);
 }
 ```
 
-### Default Key Behavior
-
-The `"default"` key serves as a fallback mechanism. If a user of your PostCSS plugin does not specify a value when using a shortcut function, the plugin will use "default" to look up a predefined default value in the Tailwind CSS configuration.
-
-Styles input :
+### With Custom Shortcuts
 
 ```css
-.example {
-    transition-duration: speed(); /* No value provided */
+/* Input CSS */
+.card {
+    box-shadow: shadow(large);
+    border-radius: radius(medium);
+    background-color: colorCode('accent');
+}
+
+/* Output CSS */
+.card {
+    box-shadow: var(--shadow-large);
+    border-radius: var(--radius-medium);
+    background-color: var(--color-accent);
 }
 ```
-Tailwind configuration :
 
-```js
-export default {
-    theme: {
-        extend: {
-            transitionDuration: {
-                'fast': '200ms',
-                'default': '300ms' // 
-            }
-        }
-    }
-};
-```
+### Quoted Arguments
 
-Results :
+The plugin supports both quoted and unquoted arguments:
 
 ```css
-.example {
-    transition-duration: 300ms;
+/* All of these work the same way */
+.element {
+    border-radius: radius(medium);
+    border-radius: radius('medium');
+    border-radius: radius('medium');
+}
+```
+
+### Custom CSS Variables Setup
+
+If you're using custom shortcuts or want to extend the default behavior, you can define additional CSS variables:
+
+```css
+/* Custom CSS */
+:root {
+    --box-shadow-large: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --border-radius-medium: 0.375rem;
 }
 ```

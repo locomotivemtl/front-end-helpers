@@ -86,6 +86,7 @@ This plugin comes with the following pre-configured shortcuts that are based on 
 -   `z(value)`: Converts to `var(--z-index-{value})`
 -   `colorCode(value)`: Converts to `var(--color-{value})`
 -   `spacing(value)`: Converts to `var(--spacing-{value})`
+-   `radius(value)`: Converts to `var(--radius-{value})`
 
 These shortcuts are designed to work with Tailwind CSS v4's CSS variable system, where design tokens are exposed as CSS custom properties.
 

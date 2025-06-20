@@ -1,72 +1,64 @@
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
     typeof define === 'function' && define.amd ? define(factory) :
-    (global = global || self, global.PostCSSRemoveDoubleParentheses = factory());
+    (global = global || self, global.PostCSSTailwindShortcuts = factory());
 })(this, (function () {
-    var tailwindAliasesMap = [{
+    var defaultAliasesMap = [{
       functionIdent: 'speed',
-      tailwindKey: 'transitionDuration'
+      cssVariablePrefix: '--transition-duration'
     }, {
       functionIdent: 'ease',
-      tailwindKey: 'transitionTimingFunction'
+      cssVariablePrefix: '--ease'
     }, {
       functionIdent: 'z',
-      tailwindKey: 'zIndex'
+      cssVariablePrefix: '--z-index'
     }, {
-      functionIdent: 'color',
-      tailwindKey: 'colors'
+      functionIdent: 'colorCode',
+      cssVariablePrefix: '--color'
     }, {
       functionIdent: 'spacing',
-      tailwindKey: 'spacing'
+      cssVariablePrefix: '--spacing'
+    }, {
+      functionIdent: 'radius',
+      cssVariablePrefix: '--radius'
     }];
-    var postcssTailwindShortcuts = function postcssTailwindShortcuts(tailwindThemeConfig, options) {
+    var postcssTailwindShortcuts = function postcssTailwindShortcuts(options) {
       if (options === void 0) {
         options = {};
       }
+      // Merge default aliases with custom shortcuts
+      var aliasesMap = [].concat(defaultAliasesMap, options.shortcuts || []);
+      // Create a map for faster lookup
+      var functionMap = new Map(aliasesMap.map(function (alias) {
+        return [alias.functionIdent, alias.cssVariablePrefix];
+      }));
       return {
         postcssPlugin: 'postcss-tailwind-shortcuts',
         Root: function Root(root) {
           root.walkDecls(function (decl) {
-            // Create a concatenated regular expression pattern for all functionIdent values
-            var functionIdents = tailwindAliasesMap.map(function (alias) {
-              var _options;
-              if ((_options = options) != null && _options.prefix) {
-                var _options2;
-                return ((_options2 = options) == null ? void 0 : _options2.prefix) + "-" + alias.functionIdent;
+            if (!decl.value) return;
+            // Regular expression to match function calls like:
+            // speed(slow), speed('slow'), speed("slow")
+            var functionRegex = /(\w+)\((['"]?)([^'")]+)\2\)/g;
+            var match;
+            var newValue = decl.value;
+            // Find and replace all function calls
+            while ((match = functionRegex.exec(decl.value)) !== null) {
+              var _match = match,
+                fullMatch = _match[0],
+                functionName = _match[1],
+                argument = _match[3];
+              // Check if this function name is in our aliases map
+              if (functionMap.has(functionName)) {
+                var cssVariablePrefix = functionMap.get(functionName);
+                var replacement = "var(" + cssVariablePrefix + "-" + argument + ")";
+                newValue = newValue.replace(fullMatch, replacement);
               }
-              return alias.functionIdent;
-            }).join('|');
-            var regex = new RegExp("\\b(" + functionIdents + ")\\s*\\(\\s*['\"]?([^'\")]+)?['\"]?\\s*\\)", 'g');
-            // Replace the function with the Tailwind value
-            decl.value = decl.value.replace(regex, function (match, ident, value) {
-              // Find the corresponding tailwind key and get the value
-              var alias = tailwindAliasesMap.find(function (alias) {
-                var _options3;
-                if ((_options3 = options) != null && _options3.prefix) {
-                  var _options4;
-                  return ((_options4 = options) == null ? void 0 : _options4.prefix) + "-" + alias.functionIdent === ident;
-                }
-                return alias.functionIdent === ident;
-              });
-              if (alias) {
-                var _tailwindThemeConfig$;
-                var tailwindKey = alias.tailwindKey;
-                var defaultValue = 'default'; // Default key value to use if no value is provided
-                // Determine the value to use
-                var keyValue = value || defaultValue;
-                // Access the value from the Tailwind config
-                var tailwindValue = (_tailwindThemeConfig$ = tailwindThemeConfig.extend[tailwindKey]) == null ? void 0 : _tailwindThemeConfig$[keyValue];
-                // Log an error if no value is found
-                if (!tailwindValue) {
-                  console.error("No value found for " + tailwindKey + "." + keyValue);
-                  return match;
-                }
-                // Return the Tailwind value
-                return tailwindValue;
-              }
-              // Return the original value if no match is found
-              return match;
-            });
+            }
+            // Update the declaration value if changes were made
+            if (newValue !== decl.value) {
+              decl.value = newValue;
+            }
           });
         }
       };

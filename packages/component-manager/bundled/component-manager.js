@@ -171,10 +171,10 @@
    *
    * @example
    * // Find components with specific attributes
-   * const activeComponents = findComponents($component => $component.hasAttribute('active'));
+   * const activeComponents = findComponents<MyComponent>($component => $component.hasAttribute('active'));
    *
    * // Find components by custom criteria
-   * const openDialogs = findComponents(comp =>
+   * const openDialogs = findComponents<Dialog>(comp =>
    *   comp.prototypeType === 'Dialog' && comp.hasAttribute('open')
    * );
    */

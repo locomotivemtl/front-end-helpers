@@ -1,9 +1,12 @@
-import { CustomThemeConfig } from 'tailwindcss/types/config';
 type Options = {
     prefix?: string;
+    shortcuts?: {
+        functionIdent: string;
+        cssVariablePrefix: string;
+    }[];
 };
 declare const postcssTailwindShortcuts: {
-    (tailwindThemeConfig: Partial<CustomThemeConfig>, options?: Options): {
+    (options?: Options): {
         postcssPlugin: string;
         Root(root: any): void;
     };

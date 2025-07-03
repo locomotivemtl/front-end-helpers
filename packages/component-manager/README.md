@@ -63,16 +63,16 @@ customElements.define('c-accordion', ComponentElement(Accordion, 'Accordion'), {
 ```typescript
 import { getComponentById, getComponentsByPrototype, findComponents } from '@locomotivemtl/component-manager';
 
-// Get specific component by ID
+// Get specific component by ID with full type safety
 const $accordion = getComponentById<Accordion>('accordion-1');
-$accordion?.toggle();
+$accordion?.toggle(); // TypeScript knows about toggle() method
 
-// Get all components of a type
-const $allAccordions = getComponentsByPrototype('Accordion');
-$allAccordions.forEach(acc => acc.close());
+// Get all components of a type with type safety
+const $allAccordions = getComponentsByPrototype<Accordion>('Accordion');
+$allAccordions.forEach($accordion => $accordion.toggle()); // TypeScript knows about Accordion methods
 
-// Advanced queries
-const $openDialogs = findComponents($component => 
+// Advanced queries with generic support
+const $openDialogs = findComponents<Dialog>($component => 
     $component.prototypeType === 'Dialog' && $component.hasAttribute('open')
 );
 ```
@@ -148,24 +148,52 @@ customElements.define('c-accordion', ComponentElement(Accordion, 'Accordion'));
 // ComponentElement(Accordion, Accordion.name) // Could become 'a' in production
 ```
 
-#### `getComponentById<T>(id: string): T | undefined`
+
+#### `getComponentById<T>(id: string): ComponentOfType<T> | undefined`
 Retrieves a component by its unique ID with optional type casting.
 
-#### `getComponentsByPrototype(prototype: string, selectorsToExclude?: string[] | string | HTMLElement | ManagedComponent): ManagedComponent[]`
-Gets all components of a specific prototype with optional exclusion filters.
-
-#### `findComponents(predicate: (component: ManagedComponent) => boolean): ManagedComponent[]`
-Query components using a custom predicate function.
-
-**Example:**
+**Generic Usage:**
 ```typescript
-// Find components with specific attributes
-const $activeComponents = findComponents($component => $component.hasAttribute('active'));
+// Get component with full type safety
+const $dialog = getComponentById<Dialog>('my-dialog');
+if ($dialog) {
+    $dialog.open();
+}
+```
 
-// Find components by custom criteria  
-const $openDialogs = findComponents($component => 
+#### `getComponentsByPrototype<T>(prototype: string, selectorsToExclude?: string[] | string | HTMLElement | ManagedComponent): ComponentOfType<T>[]`
+Gets all components of a specific prototype with optional exclusion filters and full type safety.
+
+**Generic Usage:**
+```typescript
+// Get all components with type safety
+const $allDialogs = getComponentsByPrototype<Dialog>('Dialog');
+$allDialogs.forEach($dialog => {
+    $dialog.open();
+});
+
+// With exclusions
+const $otherDialogs = getComponentsByPrototype<Dialog>('Dialog', '#current-dialog');
+```
+
+#### `findComponents<T>(predicate: (component: ManagedComponent) => boolean): ComponentOfType<T>[]`
+Query components using a custom predicate function with optional type casting.
+
+**Generic Usage:**
+```typescript
+// Find components with specific attributes and type safety
+const $activeComponents = findComponents<MyComponent>($component => 
+    $component.hasAttribute('active')
+);
+
+// Find components by custom criteria with full typing
+const $openDialogs = findComponents<Dialog>($component => 
     $component.prototypeType === 'Dialog' && $component.hasAttribute('open')
 );
+
+$openDialogs.forEach($dialog => {
+    $dialog.close();
+});
 ```
 
 ### Utility Functions
@@ -214,31 +242,49 @@ window.ComponentManager = {
 
 ### Type-Safe Component Access
 
+The component manager now provides full TypeScript support with automatic type inference:
+
 ```typescript
-interface MyDialog extends ManagedComponent {
-    open(): void;
-    close(): void;
-    isOpen: boolean;
+class MyDialog extends HTMLElement {
+    public isOpen = false;
+    
+    open() {
+        this.isOpen = true;
+        this.showModal();
+    }
+    
+    close() {
+        this.isOpen = false;
+        this.close();
+    }
 }
 
-// Type-safe retrieval
+customElements.define('c-dialog', ComponentElement(MyDialog, 'Dialog'));
+
+// ✅ Full type safety - no need for separate interfaces!
 const $dialog = getComponentById<MyDialog>('dialog-1');
 if ($dialog) {
-    $dialog.open(); // TypeScript knows about open() method
+    $dialog.open(); // ✅ TypeScript knows about open() method
 }
+
+// ✅ Works with arrays too
+const $allDialogs = getComponentsByPrototype<MyDialog>('Dialog');
+$allDialogs.forEach($dialog => {
+    $dialog.open(); // ✅ Full type safety for each element
+});
 ```
 
 ### Excluding Components from Queries
 
 ```typescript
 // Exclude by selector
-const $otherAccordions = getComponentsByPrototype('Accordion', '#current-accordion');
+const $otherAccordions = getComponentsByPrototype<Accordion>('Accordion', '#current-accordion');
 
 // Exclude by element reference  
-const $otherAccordions = getComponentsByPrototype('Accordion', this);
+const $otherAccordions = getComponentsByPrototype<Accordion>('Accordion', this);
 
 // Exclude multiple selectors
-const $filtered = getComponentsByPrototype('Dialog', ['.ignore', '#skip-me']);
+const $filtered = getComponentsByPrototype<Dialog>('Dialog', ['.ignore', '#skip-me']);
 ```
 
 ### Performance Optimization
@@ -320,6 +366,23 @@ class MyComponent extends HTMLElement {
 - Perfect for inline HTML event handlers
 - Ideal for integrating with external libraries
 - Use for browser console debugging and testing
+
+### TypeScript Best Practices
+
+- Always use generic types when calling component manager functions for better type safety
+- No need to create separate interfaces. Use your component classes directly as generic types
+- The `ComponentOfType<T>` type automatically provides both your component properties and manager properties
+
+```typescript
+// ✅ Recommended - Direct class usage
+const $search = getComponentById<Search>('search-1');
+
+// ❌ Not needed - No need for separate interfaces
+interface SearchComponent extends ManagedComponent {
+    // ...
+}
+const $search = getComponentById<SearchComponent>('search-1');
+```
 
 ---
 

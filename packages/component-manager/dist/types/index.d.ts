@@ -22,6 +22,14 @@ export type ManagedComponent = HTMLElement & {
     id: string;
 };
 /**
+ * More flexible type for components that can be used with typed functions
+ * This allows for intersection types with your custom components
+ */
+export type ComponentOfType<T extends HTMLElement> = T & {
+    prototypeType: string;
+    id: string;
+};
+/**
  * Base interface for components that can be used with getComponentById generic
  */
 export interface ComponentLike extends Partial<ManagedComponent> {
@@ -354,12 +362,12 @@ export declare const ComponentElement: <BaseClass extends CustomElementConstruct
 /**
  * Get a component by its unique ID with improved type safety
  */
-export declare const getComponentById: <T extends ComponentLike = ManagedComponent>(id: string) => T;
+export declare const getComponentById: <T extends HTMLElement = HTMLElement>(id: string) => ComponentOfType<T>;
 /**
  * Get all components of a specific prototype, with optional exclusion filters
  * Includes performance optimization with caching for frequently called queries
  */
-export declare const getComponentsByPrototype: (prototype: string, selectorsToExclude?: string[] | string | HTMLElement | ManagedComponent) => ManagedComponent[];
+export declare const getComponentsByPrototype: <T extends HTMLElement = HTMLElement>(prototype: string, selectorsToExclude?: string[] | string | HTMLElement | ManagedComponent) => ComponentOfType<T>[];
 /**
  * Find components using a custom predicate function
  * @param predicate - Function that returns true for components to include
@@ -367,14 +375,14 @@ export declare const getComponentsByPrototype: (prototype: string, selectorsToEx
  *
  * @example
  * // Find components with specific attributes
- * const activeComponents = findComponents($component => $component.hasAttribute('active'));
+ * const activeComponents = findComponents<MyComponent>($component => $component.hasAttribute('active'));
  *
  * // Find components by custom criteria
- * const openDialogs = findComponents(comp =>
+ * const openDialogs = findComponents<Dialog>(comp =>
  *   comp.prototypeType === 'Dialog' && comp.hasAttribute('open')
  * );
  */
-export declare const findComponents: (predicate: (component: ManagedComponent) => boolean) => ManagedComponent[];
+export declare const findComponents: <T extends HTMLElement = HTMLElement>(predicate: (component: ManagedComponent) => boolean) => ComponentOfType<T>[];
 /**
  * Get all registered prototype types
  * @returns Array of unique prototype names

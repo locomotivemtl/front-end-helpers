@@ -26,6 +26,15 @@ export type ManagedComponent = HTMLElement & {
 };
 
 /**
+ * More flexible type for components that can be used with typed functions
+ * This allows for intersection types with your custom components
+ */
+export type ComponentOfType<T extends HTMLElement> = T & {
+    prototypeType: string;
+    id: string;
+};
+
+/**
  * Base interface for components that can be used with getComponentById generic
  */
 export interface ComponentLike extends Partial<ManagedComponent> {
@@ -144,22 +153,24 @@ export const ComponentElement = <BaseClass extends CustomElementConstructor>(
 /**
  * Get a component by its unique ID with improved type safety
  */
-export const getComponentById = <T extends ComponentLike = ManagedComponent>(
+export const getComponentById = <T extends HTMLElement = HTMLElement>(
     id: string
-): T | undefined => {
-    return $componentsManager.get().find(($component) => $component.id === id) as T | undefined;
+): ComponentOfType<T> | undefined => {
+    return $componentsManager.get().find(($component) => $component.id === id) as
+        | ComponentOfType<T>
+        | undefined;
 };
 
 /**
  * Get all components of a specific prototype, with optional exclusion filters
  * Includes performance optimization with caching for frequently called queries
  */
-export const getComponentsByPrototype = (
+export const getComponentsByPrototype = <T extends HTMLElement = HTMLElement>(
     prototype: string,
     selectorsToExclude: string[] | string | HTMLElement | ManagedComponent = []
-): ManagedComponent[] => {
+): ComponentOfType<T>[] => {
     const currentStore = $componentsManager.get();
-    
+
     // Invalidate cache if store changed
     if (currentStore !== cacheStoreSnapshot) {
         prototypeCache.clear();
@@ -167,12 +178,13 @@ export const getComponentsByPrototype = (
     }
 
     // Only cache when no exclusions (most common case)
-    const hasExclusions = Array.isArray(selectorsToExclude) ? selectorsToExclude.length > 0 
+    const hasExclusions = Array.isArray(selectorsToExclude)
+        ? selectorsToExclude.length > 0
         : selectorsToExclude !== '';
-        
+
     if (!hasExclusions) {
         if (prototypeCache.has(prototype)) {
-            return prototypeCache.get(prototype)!;
+            return prototypeCache.get(prototype)! as ComponentOfType<T>[];
         }
     }
 
@@ -195,7 +207,7 @@ export const getComponentsByPrototype = (
                 (selector: string) => $component.matches && $component.matches(selector)
             )
         );
-    });
+    }) as ComponentOfType<T>[];
 
     // Cache result if no exclusions
     if (!hasExclusions) {
@@ -212,17 +224,17 @@ export const getComponentsByPrototype = (
  *
  * @example
  * // Find components with specific attributes
- * const activeComponents = findComponents($component => $component.hasAttribute('active'));
- * 
+ * const activeComponents = findComponents<MyComponent>($component => $component.hasAttribute('active'));
+ *
  * // Find components by custom criteria
- * const openDialogs = findComponents(comp => 
+ * const openDialogs = findComponents<Dialog>(comp =>
  *   comp.prototypeType === 'Dialog' && comp.hasAttribute('open')
  * );
  */
-export const findComponents = (
+export const findComponents = <T extends HTMLElement = HTMLElement>(
     predicate: (component: ManagedComponent) => boolean
-): ManagedComponent[] => {
-    return $componentsManager.get().filter(predicate);
+): ComponentOfType<T>[] => {
+    return $componentsManager.get().filter(predicate) as ComponentOfType<T>[];
 };
 
 /**
@@ -258,5 +270,5 @@ export const getComponentCount = (): number => {
     return $componentsManager.get().length;
 };
 
-// Initialize the bridge after all functions are defined  
+// Initialize the bridge after all functions are defined
 initializeWindowBridge();

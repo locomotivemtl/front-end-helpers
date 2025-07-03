@@ -54,11 +54,15 @@ export default {
 };
 ```
 
+> [!IMPORTANT]
+> Add `static` to your `@theme` directive to prevent Tailwind from purging CSS variables. This ensures they remain available for the plugin functions.
+> [Source](https://tailwindcss.com/docs/theme#generating-all-css-variables)
+
 And set them in your Tailwind theme configuration:
 
 ```css
 /* Using Tailwind @theme directive */
-@theme {
+@theme static {
     --shadow-large: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     --radius-medium: 0.375rem;
 }

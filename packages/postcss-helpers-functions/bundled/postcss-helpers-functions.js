@@ -93,6 +93,31 @@
       return "calc(" + percentage + " * var(--vw, 1vw))";
     }
 
+    /**
+     * Converts pixel values to rem units based on a configurable root font size.
+     *
+     * Example usage:
+     * ```js
+     * const fontSize = rem(16);     // Returns "1rem" (if root is 16px)
+     * const margin = rem("24px");   // Returns "1.5rem" (if root is 16px)
+     * const padding = rem(8);       // Returns "0.5rem" (if root is 16px)
+     * const spacing = rem("32px");  // Returns "2rem" (if root is 16px)
+     * ```
+     *
+     * @param {number | string} pixels - The pixel value to convert to rem (number or string with "px").
+     * @param {number} rootSize - The root font size in pixels. Defaults to 16.
+     * @return {string} The calculated rem value as a string.
+     */
+    function rem(pixels, rootSize) {
+      if (rootSize === void 0) {
+        rootSize = 16;
+      }
+      // Parse the pixels value if it's a string
+      var pixelValue = typeof pixels === 'string' ? parseFloat(pixels.replace('px', '')) : pixels;
+      var remValue = pixelValue / rootSize;
+      return remValue + "rem";
+    }
+
     var helpersFunctionsAliasesMap = [{
       functionIdent: 'grid-space',
       "function": gridSpace
@@ -111,6 +136,9 @@
     }, {
       functionIdent: 'vw',
       "function": vw
+    }, {
+      functionIdent: 'rem',
+      "function": rem
     }];
     var postcssHelpersFunctions = function postcssHelpersFunctions(options) {
       return {

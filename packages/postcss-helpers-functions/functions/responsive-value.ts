@@ -20,6 +20,6 @@ const responsiveValue: ResponsiveValue = (minSize, maxSize, breakpoint): string 
 
     // Construct the `clamp()` function for responsive font size
     return `clamp(${minSize}, calc(${delta} * var(--vw, 1vw) * 100), ${maxSize})`;
-}
+};
 
 export default responsiveValue;

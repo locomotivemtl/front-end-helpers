@@ -4,6 +4,7 @@ import dvh from './functions/dvh';
 import svh from './functions/svh';
 import lvh from './functions/lvh';
 import vw from './functions/vw';
+import rem from './functions/rem';
 
 const helpersFunctionsAliasesMap = [
     {
@@ -29,6 +30,10 @@ const helpersFunctionsAliasesMap = [
     {
         functionIdent: 'vw',
         function: vw
+    },
+    {
+        functionIdent: 'rem',
+        function: rem
     }
 ];
 

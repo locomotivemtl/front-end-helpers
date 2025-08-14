@@ -34,6 +34,7 @@ export default {
     font-size: responsive-value(16px, 32px, 1200);
     height: dvh(100);
     padding: svh(5);
+    margin: rem(24px);
 }
 ```
 
@@ -45,6 +46,7 @@ export default {
     font-size: clamp(16px, calc(0.02666666666666667 * var(--vw, 1vw) * 100), 32px);
     height: calc(100 * var(--dvh, 1dvh));
     padding: calc(5 * var(--svh, 1svh));
+    margin: 1.5rem;
 }
 ```
 
@@ -58,6 +60,7 @@ This plugin provides several helper functions to streamline CSS calculations.
 |-----------------------|-------------------------------------------------------------------------------------------------|---------------------------------------|---------------------------------------------------------------------------------------------------------------|
 | `gridSpace(frac, inset)` | Calculates grid spacing based on a fraction of the grid and an optional gutter inset.           | `grid-space(6/12, 1)`                  | `calc(0.5 * (calc(var(--vw) * 100) - 2 * var(--grid-margin)) - 0.5 * var(--grid-gutter) + 1 * var(--grid-gutter))` |
 | `responsiveValue(min, max, breakpoint)` | Creates a responsive value using CSS `clamp()` for fluid scaling.                          | `responsive-value(16px, 32px, 1200)` | `clamp(16px, calc(0.026666 * var(--vw) * 100), 32px)`                                                          |
+| `rem(pixels, rootSize)` | Converts pixel values to rem units based on a configurable root font size.                     | `rem(24px)` or `rem(24)`               | `1.5rem`                                                                                                       |
 | `dvh(percentage)`      | Calculates a percentage of the dynamic viewport height.                                          | `dvh(100)`                             | `calc(100 * var(--dvh, 1dvh))`                                                                                 |
 | `svh(percentage)`      | Calculates a percentage of the small viewport height.                                           | `svh(50)`                              | `calc(50 * var(--svh, 1svh))`                                                                                 |
 | `lvh(percentage)`      | Calculates a percentage of the large viewport height.                                           | `lvh(100)`                             | `calc(100 * var(--lvh, 1lvh))`                                                                                 |
@@ -118,7 +121,36 @@ font-size: clamp(16px, calc(0.026666 * var(--vw, 1vw) * 100), 32px);
 
 ---
 
-#### 3. **Viewport Height Calculations (`dvh`, `svh`, `lvh`)**
+#### 3. **Rem Unit Conversion (`rem`)**
+
+Converts pixel values to rem units based on a configurable root font size.
+
+**Syntax:**
+```js
+rem(pixels, rootSize = 16)
+```
+
+**Parameters:**
+- `pixels` (number | string): The pixel value to convert to rem (accepts both `24` and `"24px"`).
+- `rootSize` (number, optional): The root font size in pixels (default: `16`).
+
+**Example:**
+```css
+font-size: rem(24px);
+margin: rem(16);
+padding: rem(8px, 18);
+```
+
+**Output:**
+```css
+font-size: 1.5rem;
+margin: 1rem;
+padding: 0.444rem;
+```
+
+---
+
+#### 4. **Viewport Height Calculations (`dvh`, `svh`, `lvh`)**
 
 Generates a CSS `calc()` string for dynamic viewport height values.
 
@@ -140,4 +172,3 @@ padding: svh(5);
 height: calc(100 * var(--dvh, 1dvh));
 padding: calc(5 * var(--svh, 1svh));
 ```
-

@@ -1,6 +1,6 @@
 {
     "name": "@locomotivemtl/postcss-helpers-functions",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "A set of useful PostCSS functions to help you write better CSS.",
     "repository": {
         "type": "git",

@@ -28,8 +28,9 @@
      * @param rootMargin - Default root margin for elements without data-inview-root-margin
      * @param callback - Optional callback function called once initialization is complete
      */
-    IntersectionObserverManager.init = function init(_ref) {
-      var _ref$rootMargin = _ref.rootMargin,
+    IntersectionObserverManager.init = function init(_temp) {
+      var _ref = _temp === void 0 ? {} : _temp,
+        _ref$rootMargin = _ref.rootMargin,
         rootMargin = _ref$rootMargin === void 0 ? this.defaultRootMargin : _ref$rootMargin,
         callback = _ref.callback;
       this.defaultRootMargin = rootMargin;
@@ -41,8 +42,9 @@
      * Destroy all IntersectionObservers and clear all observed elements
      * @param callback - Optional callback function called once destruction is complete
      */;
-    IntersectionObserverManager.destroy = function destroy(_ref2) {
-      var callback = _ref2.callback;
+    IntersectionObserverManager.destroy = function destroy(_temp2) {
+      var _ref2 = _temp2 === void 0 ? {} : _temp2,
+        callback = _ref2.callback;
       this.observers.forEach(function (observer) {
         return observer.disconnect();
       });

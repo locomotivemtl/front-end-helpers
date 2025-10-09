@@ -37,7 +37,7 @@ export class IntersectionObserverManager {
     }: {
         rootMargin?: string;
         callback?: () => void;
-    }): void {
+    } = {}): void {
         this.defaultRootMargin = rootMargin;
         this.observeAll();
         window.dispatchEvent(new CustomEvent(this.CONFIG.EVENTS.READY));
@@ -48,7 +48,7 @@ export class IntersectionObserverManager {
      * Destroy all IntersectionObservers and clear all observed elements
      * @param callback - Optional callback function called once destruction is complete
      */
-    public static destroy({ callback }: { callback?: () => void }): void {
+    public static destroy({ callback }: { callback?: () => void } = {}): void {
         this.observers.forEach((observer) => observer.disconnect());
         this.observers.clear();
         this.observedElements.clear();

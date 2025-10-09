@@ -13,7 +13,7 @@ export declare class IntersectionObserverManager {
      * @param rootMargin - Default root margin for elements without data-inview-root-margin
      * @param callback - Optional callback function called once initialization is complete
      */
-    static init({ rootMargin, callback }: {
+    static init({ rootMargin, callback }?: {
         rootMargin?: string;
         callback?: () => void;
     }): void;
@@ -21,7 +21,7 @@ export declare class IntersectionObserverManager {
      * Destroy all IntersectionObservers and clear all observed elements
      * @param callback - Optional callback function called once destruction is complete
      */
-    static destroy({ callback }: {
+    static destroy({ callback }?: {
         callback?: () => void;
     }): void;
     /**

@@ -10,13 +10,20 @@ export declare class IntersectionObserverManager {
     private static readonly CONFIG;
     /**
      * Initialize the IntersectionObserver(s) and observe all elements with data-inview
-     * @param defaultRootMargin - Default root margin for elements without data-inview-root-margin
+     * @param rootMargin - Default root margin for elements without data-inview-root-margin
+     * @param callback - Optional callback function called once initialization is complete
      */
-    static init(defaultRootMargin?: string): void;
+    static init({ rootMargin, callback }: {
+        rootMargin?: string;
+        callback?: () => void;
+    }): void;
     /**
      * Destroy all IntersectionObservers and clear all observed elements
+     * @param callback - Optional callback function called once destruction is complete
      */
-    static destroy(): void;
+    static destroy({ callback }: {
+        callback?: () => void;
+    }): void;
     /**
      * Add a single element to be observed
      * Useful for dynamically added elements

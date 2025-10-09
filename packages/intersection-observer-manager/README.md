@@ -22,7 +22,10 @@ A lightweight, static TypeScript class to manage viewport intersection detection
 import { IntersectionObserverManager } from '@locomotivemtl/intersection-observer-manager';
 
 // Initialize with default rootMargin
-IntersectionObserverManager.init('0px 0px 0px 0px');
+IntersectionObserverManager.init({
+    rootMargin: '0px 0px 0px 0px',
+    callback: () => {}
+});
 ```
 
 ### Add data attributes to HTML elements
@@ -55,35 +58,53 @@ IntersectionObserverManager.init('0px 0px 0px 0px');
 
 ```typescript
 // When leaving the page or component
-IntersectionObserverManager.destroy();
+IntersectionObserverManager.destroy({
+    callback: () => {}
+});
 ```
 
 ## API Reference
 
 ### Methods
 
-#### `init(defaultRootMargin?: string): void`
+#### `init({rootMargin?: string, callback?: () => void }): void`
 
 Initialize the observer and start observing all elements with `data-inview`.
 
 ```typescript
 // Default: triggers when element is 10% from bottom of viewport
-IntersectionObserverManager.init('0px 0px -10% 0px');
+IntersectionObserverManager.init({
+    rootMargin: '0px 0px -10% 0px'
+});
 
 // Trigger immediately when element enters viewport
-IntersectionObserverManager.init('0px');
+IntersectionObserverManager.init({
+    rootMargin: '0px'
+});
 
 // Trigger 100px before element enters viewport
-IntersectionObserverManager.init('0px 0px 100px 0px');
+IntersectionObserverManager.init({
+    rootMargin: '0px 0px 100px 0px'
+});
 ```
 
-#### `destroy(): void`
+#### `destroy({callback?: () => void}): void`
 
 Disconnect all observers and clear all tracked elements.
 
 ```typescript
-IntersectionObserverManager.destroy();
+IntersectionObserverManager.destroy({
+    callback: () => {}
+});
 ```
+
+> [!TIP]
+> Dispatched events on `window` object
+> | Event                                   | Description                                            |
+> | --------------------------------------- | ------------------------------------------------------ |
+> | `intersectionObserverManager:ready`     | Dispatched when the intersection observer is ready     |
+> | `intersectionObserverManager:destroyed` | Dispatched when the intersection observer is destroyed |
+
 
 #### `observe(element: Element, callback?: IntersectionCallback, options?: Partial<ObserveOptions>): void`
 
@@ -127,14 +148,6 @@ IntersectionObserverManager.observe(
 ```typescript
 type IntersectionCallback = (entry: IntersectionObserverEntry, isIntersecting: boolean) => void;
 ```
-
-**Dispatched events:**
-
-| Event                                   | Description                                            |
-| --------------------------------------- | ------------------------------------------------------ |
-| `intersectionObserverManager:ready`     | Dispatched when the intersection observer is ready     |
-| `intersectionObserverManager:destroyed` | Dispatched when the intersection observer is destroyed |
-
 
 **Options:**
 
@@ -242,7 +255,9 @@ router.beforeEach(() => {
 });
 
 router.afterEach(() => {
-    IntersectionObserverManager.init('0px 0px 0px 0px');
+    IntersectionObserverManager.init({
+        rootMargin: '0px 0px 0px 0px'
+    });
 });
 ```
 

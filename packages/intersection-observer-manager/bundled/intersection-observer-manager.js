@@ -25,26 +25,31 @@
     // =============================================================================
     /**
      * Initialize the IntersectionObserver(s) and observe all elements with data-inview
-     * @param defaultRootMargin - Default root margin for elements without data-inview-root-margin
+     * @param rootMargin - Default root margin for elements without data-inview-root-margin
+     * @param callback - Optional callback function called once initialization is complete
      */
-    IntersectionObserverManager.init = function init(defaultRootMargin) {
-      if (defaultRootMargin === void 0) {
-        defaultRootMargin = this.defaultRootMargin;
-      }
-      this.defaultRootMargin = defaultRootMargin;
+    IntersectionObserverManager.init = function init(_ref) {
+      var _ref$rootMargin = _ref.rootMargin,
+        rootMargin = _ref$rootMargin === void 0 ? this.defaultRootMargin : _ref$rootMargin,
+        callback = _ref.callback;
+      this.defaultRootMargin = rootMargin;
       this.observeAll();
       window.dispatchEvent(new CustomEvent(this.CONFIG.EVENTS.READY));
+      callback == null || callback();
     }
     /**
      * Destroy all IntersectionObservers and clear all observed elements
+     * @param callback - Optional callback function called once destruction is complete
      */;
-    IntersectionObserverManager.destroy = function destroy() {
+    IntersectionObserverManager.destroy = function destroy(_ref2) {
+      var callback = _ref2.callback;
       this.observers.forEach(function (observer) {
         return observer.disconnect();
       });
       this.observers.clear();
       this.observedElements.clear();
       window.dispatchEvent(new CustomEvent(this.CONFIG.EVENTS.DESTROYED));
+      callback == null || callback();
     }
     /**
      * Add a single element to be observed

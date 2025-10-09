@@ -33,7 +33,7 @@
       }
       this.defaultRootMargin = defaultRootMargin;
       this.observeAll();
-      document.dispatchEvent(new CustomEvent(this.CONFIG.EVENTS.READY));
+      window.dispatchEvent(new CustomEvent(this.CONFIG.EVENTS.READY));
     }
     /**
      * Destroy all IntersectionObservers and clear all observed elements
@@ -44,7 +44,7 @@
       });
       this.observers.clear();
       this.observedElements.clear();
-      document.dispatchEvent(new CustomEvent(this.CONFIG.EVENTS.DESTROYED));
+      window.dispatchEvent(new CustomEvent(this.CONFIG.EVENTS.DESTROYED));
     }
     /**
      * Add a single element to be observed

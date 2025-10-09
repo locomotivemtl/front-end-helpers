@@ -28,22 +28,32 @@ export class IntersectionObserverManager {
 
     /**
      * Initialize the IntersectionObserver(s) and observe all elements with data-inview
-     * @param defaultRootMargin - Default root margin for elements without data-inview-root-margin
+     * @param rootMargin - Default root margin for elements without data-inview-root-margin
+     * @param callback - Optional callback function called once initialization is complete
      */
-    public static init(defaultRootMargin: string = this.defaultRootMargin): void {
-        this.defaultRootMargin = defaultRootMargin;
+    public static init({
+        rootMargin = this.defaultRootMargin,
+        callback
+    }: {
+        rootMargin?: string;
+        callback?: () => void;
+    }): void {
+        this.defaultRootMargin = rootMargin;
         this.observeAll();
         window.dispatchEvent(new CustomEvent(this.CONFIG.EVENTS.READY));
+        callback?.();
     }
 
     /**
      * Destroy all IntersectionObservers and clear all observed elements
+     * @param callback - Optional callback function called once destruction is complete
      */
-    public static destroy(): void {
+    public static destroy({ callback }: { callback?: () => void }): void {
         this.observers.forEach((observer) => observer.disconnect());
         this.observers.clear();
         this.observedElements.clear();
         window.dispatchEvent(new CustomEvent(this.CONFIG.EVENTS.DESTROYED));
+        callback?.();
     }
 
     /**

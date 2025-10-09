@@ -33,7 +33,7 @@ export class IntersectionObserverManager {
     public static init(defaultRootMargin: string = this.defaultRootMargin): void {
         this.defaultRootMargin = defaultRootMargin;
         this.observeAll();
-        document.dispatchEvent(new CustomEvent(this.CONFIG.EVENTS.READY));
+        window.dispatchEvent(new CustomEvent(this.CONFIG.EVENTS.READY));
     }
 
     /**
@@ -43,7 +43,7 @@ export class IntersectionObserverManager {
         this.observers.forEach((observer) => observer.disconnect());
         this.observers.clear();
         this.observedElements.clear();
-        document.dispatchEvent(new CustomEvent(this.CONFIG.EVENTS.DESTROYED));
+        window.dispatchEvent(new CustomEvent(this.CONFIG.EVENTS.DESTROYED));
     }
 
     /**

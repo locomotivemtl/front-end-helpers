@@ -1,0 +1,65 @@
+{
+    "name": "@locomotivemtl/intersection-observer-manager",
+    "version": "1.0.0",
+    "description": "A lightweight, static TypeScript class to manage viewport intersection detection across your entire application with a single, efficient API.",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/locomotivemtl/front-end-helpers.git"
+    },
+    "author": "Locomotive Inc.",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/locomotivemtl/front-end-helpers/issues"
+    },
+    "engines": {
+        "node": ">=20"
+    },
+    "type": "module",
+    "source": "index.ts",
+    "main": "dist/intersection-observer-manager.js",
+    "umd:main": "dist/intersection-observer-manager.umd.js",
+    "module": "dist/intersection-observer-manager.mjs",
+    "types": "dist/types/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/types/index.d.ts",
+            "require": "./dist/intersection-observer-manager.js",
+            "default": "./dist/intersection-observer-manager.modern.mjs"
+        },
+        "./dist/*": "./dist/*"
+    },
+    "scripts": {
+        "clean": "rimraf dist bundled",
+        "build": "npm run clean && npm-run-all --parallel build:dist build:bundle build:types",
+        "build:types": "tsc --allowJs -d --emitDeclarationOnly --declarationDir ./dist/types --removeComments --skipLibCheck --moduleResolution node --esModuleInterop --target ES2018 ./index.ts",
+        "build:dist": "microbundle build -i index.ts --o ./dist",
+        "build:bundle": "npm-run-all build:bundle-full build:bundle-min",
+        "build:bundle-full": "microbundle build -i index.ts --o ./bundled/intersection-observer-manager.js --no-sourcemap --no-pkg-main --name IntersectionObserverManager --format umd --no-compress",
+        "build:bundle-min": "microbundle build -i index.ts --o ./bundled/intersection-observer-manager.min.js --no-sourcemap --no-pkg-main --name IntersectionObserverManager --format umd",
+        "watch": "microbundle watch -i index.ts --o ./dist --no-compress",
+        "publish:beta": "npm publish --tag beta",
+        "format": "prettier --write \"./**/*.{astro,js,ts,css,scss}\""
+    },
+    "files": [
+        "dist",
+        "bundled"
+    ],
+    "homepage": "https://github.com/locomotivemtl/front-end-helpers/tree/main/packages/intersection-observer-manager",
+    "devDependencies": {
+        "microbundle": "^0.15.1",
+        "npm-run-all": "^4.1.5",
+        "rimraf": "^6.0.1"
+    },
+    "keywords": [
+        "web-components",
+        "intersection-observer-manager",
+        "typescript",
+        "frontend",
+        "dom",
+        "lifecycle",
+        "performance"
+    ],
+    "publishConfig": {
+        "access": "public"
+    }
+}

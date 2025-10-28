@@ -115,7 +115,8 @@
       // Parse the pixels value if it's a string
       var pixelValue = typeof pixels === 'string' ? parseFloat(pixels.replace('px', '')) : pixels;
       var remValue = pixelValue / rootSize;
-      return remValue + "rem";
+      // Trailing space to preserve spacing in CSS output
+      return remValue + "rem ";
     }
 
     var helpersFunctionsAliasesMap = [{

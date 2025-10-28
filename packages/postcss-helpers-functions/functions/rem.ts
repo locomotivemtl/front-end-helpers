@@ -18,5 +18,6 @@ export default function rem(pixels: number | string, rootSize: number = 16): str
     const pixelValue = typeof pixels === 'string' ? parseFloat(pixels.replace('px', '')) : pixels;
 
     const remValue = pixelValue / rootSize;
-    return `${remValue}rem`;
+    // Trailing space to preserve spacing in CSS output
+    return `${remValue}rem `;
 }

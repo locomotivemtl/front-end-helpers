@@ -55,7 +55,7 @@ const DEFAULT_HELPERS = <PostCSSProcessorHelper[]>[
         processor: maxScreen
     },
     {
-        name: 'map-range-clamp',
+        name: 'map-clamp',
         processor: mapClamp
     },
     {

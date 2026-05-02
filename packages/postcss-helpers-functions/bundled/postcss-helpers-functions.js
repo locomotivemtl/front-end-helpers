@@ -360,7 +360,7 @@
     name: 'max-screen',
     processor: maxScreen
   }, {
-    name: 'map-range-clamp',
+    name: 'map-clamp',
     processor: mapClamp
   }, {
     name: 'interpolate',

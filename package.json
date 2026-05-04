@@ -1,18 +1,25 @@
 {
-    "name": "@locomotivemtl/tailwindcss-helpers",
+    "name": "@locomotivemtl/front-end-helpers",
     "version": "1.0.0",
-    "description": "A toolkit for enhancing and optimizing Tailwind CSS workflow.",
+    "description": "Monorepo of frontend helper packages — PostCSS plugins, UI utilities, component management, intersection observer, and TypeScript utilities.",
     "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/locomotivemtl/front-end-helpers.git"
+    },
+    "author": "Locomotive Inc.",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/locomotivemtl/front-end-helpers/issues"
+    },
+    "engines": {
+        "node": ">=20"
+    },
     "workspaces": [
-        "packages/postcss-tailwind-shortcuts",
-        "packages/postcss-helpers-functions"
+        "packages/*"
     ],
     "devDependencies": {
         "prettier": "^3.3.3",
         "typescript": "^5.5.3"
-    },
-    "dependencies": {
-        "postcss": "^8.4.39",
-        "tailwindcss": "^3.4.6"
     }
 }

@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "ES2018",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": true,
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "declarationDir": "./dist/types",
+        "removeComments": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "paths": {
+            "#utils/*": ["./*"]
+        }
+    },
+    "include": ["index.ts", "**/*.ts"],
+    "exclude": ["dist", "bundled", "node_modules"]
+}

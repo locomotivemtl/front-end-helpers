@@ -1,0 +1,105 @@
+{
+    "name": "@locomotivemtl/utils",
+    "version": "1.0.0",
+    "description": "Collection of TypeScript utility modules for frontend development — async helpers, color manipulation, DOM utilities, math, logging, string operations, screen/storage reactive primitives, and more.",
+    "sideEffects": false,
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/locomotivemtl/front-end-helpers.git"
+    },
+    "author": "Locomotive Inc.",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/locomotivemtl/front-end-helpers/issues"
+    },
+    "engines": {
+        "node": ">=20"
+    },
+    "type": "module",
+    "source": "index.ts",
+    "main": "dist/utils.js",
+    "umd:main": "dist/utils.umd.js",
+    "module": "dist/utils.mjs",
+    "types": "dist/types/index.d.ts",
+    "exports": {
+        "./async": {
+            "types": "./dist/types/async/index.d.ts",
+            "default": "./async/index.ts"
+        },
+        "./colors": {
+            "types": "./dist/types/colors/index.d.ts",
+            "default": "./colors/index.ts"
+        },
+        "./convert": {
+            "types": "./dist/types/convert/index.d.ts",
+            "default": "./convert/index.ts"
+        },
+        "./dom": {
+            "types": "./dist/types/dom/index.d.ts",
+            "default": "./dom/index.ts"
+        },
+        "./log": {
+            "types": "./dist/types/log/index.d.ts",
+            "default": "./log/index.ts"
+        },
+        "./maths": {
+            "types": "./dist/types/maths/index.d.ts",
+            "default": "./maths/index.ts"
+        },
+        "./object": {
+            "types": "./dist/types/object/index.d.ts",
+            "default": "./object/index.ts"
+        },
+        "./screen": {
+            "types": "./dist/types/screen/index.d.ts",
+            "default": "./screen/index.ts"
+        },
+        "./storage": {
+            "types": "./dist/types/storage/index.d.ts",
+            "default": "./storage/index.ts"
+        },
+        "./string": {
+            "types": "./dist/types/string/index.d.ts",
+            "default": "./string/index.ts"
+        },
+        "./dist/*": "./dist/*"
+    },
+    "scripts": {
+        "clean": "rimraf dist bundled",
+        "build": "npm run clean && npm-run-all --parallel build:dist build:bundle build:types",
+        "build:types": "tsc -p tsconfig.json",
+        "build:dist": "microbundle build -i index.ts --o ./dist",
+        "build:bundle": "npm-run-all build:bundle-full build:bundle-min",
+        "build:bundle-full": "microbundle build -i index.ts --o ./bundled/utils.js --no-sourcemap --no-pkg-main --name IntersectionObserverManager --format umd --no-compress",
+        "build:bundle-min": "microbundle build -i index.ts --o ./bundled/utils.min.js --no-sourcemap --no-pkg-main --name IntersectionObserverManager --format umd",
+        "watch": "microbundle watch -i index.ts --o ./dist --no-compress",
+        "publish:beta": "npm publish --tag beta",
+        "format": "prettier --write \"./**/*.{astro,js,ts,css,scss}\""
+    },
+    "files": [
+        "dist",
+        "bundled"
+    ],
+    "homepage": "https://github.com/locomotivemtl/front-end-helpers/tree/main/packages/utils",
+    "devDependencies": {
+        "microbundle": "^0.15.1",
+        "npm-run-all": "^4.1.5",
+        "rimraf": "^6.0.1"
+    },
+    "peerDependencies": {
+        "nanostores": "^1.3.x"
+    },
+    "imports": {
+        "#utils/*": "./*"
+    },
+    "keywords": [
+        "web-components",
+        "utils",
+        "typescript",
+        "frontend",
+        "dom"
+    ],
+    "publishConfig": {
+        "access": "public"
+    }
+}

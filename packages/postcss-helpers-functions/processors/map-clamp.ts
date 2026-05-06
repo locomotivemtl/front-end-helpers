@@ -55,9 +55,7 @@ export default function mapClamp(value: string): string {
         let current = '';
         let parens = 0;
 
-        for (let j = 0; j < content.length; j++) {
-            const char = content[j];
-
+        for (const char of content) {
             if (char === '(') {
                 parens++;
                 current += char;

@@ -33,49 +33,31 @@
     }
   }
 
-  /**
-   * Calculates a percentage of the viewport dynamic height (dvh).
-   *
-   * Example usage:
-   * ```js
-   * const height = dvh(100); // Returns "calc(100 * var(--dvh, 1dvh))"
-   * ```
-   *
-   * @param {number} percentage - The percentage of the dynamic viewport height.
-   * @return {string} The calculated CSS value as a string.
-   */
-  function dvh(percentage) {
-    return "calc(" + percentage + " * var(--dvh, 1dvh))";
-  }
-
-  /**
-   * Generates a CSS `calc()` string to calculate a percentage of the grid cell width,
-   * with an optional grid gutter inset.
-   *
-   * This function mimics the behavior of a Sass function and is suitable for use in PostCSS plugins.
-   *
-   * Example usage:
-   * ```js
-   * gridSpace(6/12); // Calculates a width based on 6/12 of the grid
-   * gridSpace(1/12, 1); // Calculates with a gutter inset
-   * ```
-   *
-   * @param {number} percentage - The fraction of the grid (e.g., 6/12 or 0.5 for half the grid width).
-   * @param {number} [inset=0] - An optional inset multiplier for the grid gutter (default is 0).
-   * @returns {string} - The CSS `calc()` string for the grid spacing.
-   */
-  function gridSpace(percentage, inset) {
-    if (inset === void 0) {
-      inset = 0;
+  /** Split a string by top-level commas, ignoring commas inside parentheses. */
+  function splitArgs(input) {
+    var result = [];
+    var current = '';
+    var depth = 0;
+    for (var _iterator = _createForOfIteratorHelperLoose(input), _step; !(_step = _iterator()).done;) {
+      var _char = _step.value;
+      if (_char === '(') depth++;else if (_char === ')') depth--;
+      if (_char === ',' && depth === 0) {
+        result.push(current.trim());
+        current = '';
+      } else {
+        current += _char;
+      }
     }
-    return "calc(\n        " + percentage + " * (calc(var(--vw, 1vw) * 100) - 2 * var(--grid-margin, 0px)) -\n        (1 - " + percentage + ") * var(--grid-gutter, 0px) +\n        " + inset + " * var(--grid-gutter, 0px)\n    )";
+    result.push(current.trim());
+    return result;
   }
-
   /**
-   * PostCSS helper: Replace interpolate(value) with a linear interpolation between two values based on a percentage
+   * Find all `processor_name(...)` calls in a CSS value string and replace them.
+   * Handles nested parentheses (e.g. CSS vars with fallbacks).
+   * Return null from transform to leave the call unchanged.
    */
-  function interpolate(value) {
-    var keyword = 'interpolate(';
+  function replaceCSSFunction(value, name, transform) {
+    var keyword = name + "(";
     if (!value.includes(keyword)) return value;
     var result = '';
     var i = 0;
@@ -86,7 +68,6 @@
         break;
       }
       result += value.slice(i, start);
-      // Find the matching closing parenthesis
       var contentStart = start + keyword.length;
       var depth = 1;
       var j = contentStart;
@@ -94,242 +75,373 @@
         if (value[j] === '(') depth++;else if (value[j] === ')') depth--;
         j++;
       }
-      var args = value.slice(contentStart, j - 1);
-      var parts = splitArgs(args);
-      if (parts.length === 3) {
-        var _parts$map = parts.map(function (s) {
-            return s.trim();
-          }),
-          a = _parts$map[0],
-          b = _parts$map[1],
-          t = _parts$map[2];
-        result += "calc(" + a + " * (1 - " + t + ") + " + b + " * " + t + ")";
-      } else {
-        result += value.slice(start, j);
-      }
+      var args = splitArgs(value.slice(contentStart, j - 1));
+      var replacement = transform(args);
+      result += replacement != null ? replacement : value.slice(start, j);
       i = j;
     }
     return result;
   }
-  /** Split a string by commas, ignoring commas nested inside parentheses. */
-  function splitArgs(input) {
-    var result = [];
-    var current = '';
-    var depth = 0;
-    for (var _iterator = _createForOfIteratorHelperLoose(input), _step; !(_step = _iterator()).done;) {
-      var _char = _step.value;
-      if (_char === '(') depth++;else if (_char === ')') depth--;
-      if (_char === ',' && depth === 0) {
-        result.push(current);
-        current = '';
-      } else {
-        current += _char;
-      }
-    }
-    result.push(current);
-    return result;
-  }
 
   /**
-   * Calculates a percentage of the viewport large height (lvh).
+   * Replaces `dvh(n)` with `calc(n * var(--dvh, 1dvh))`.
    *
-   * Example usage:
-   * ```js
-   * const height = lvh(100); // Returns "calc(100 * var(--lvh, 1lvh))"
+   * Uses a CSS custom property `--dvh` set by JS to work around iOS Safari's
+   * dynamic viewport height bug, falling back to the native `dvh` unit.
+   *
+   * @example
+   * ```css
+   * // Input
+   * div {
+   *  height: dvh(100);
+   * }
    * ```
    *
-   * @param {number} percentage - The percentage of the large viewport height.
-   * @return {string} The calculated CSS value as a string.
+   * ```css
+   * // Output
+   * div {
+   *  height: calc(100 * var(--dvh, 1dvh));
+   * }
+   * ```
    */
-  function lvh(percentage) {
-    return "calc(" + percentage + " * var(--lvh, 1lvh))";
+  function dvh(value) {
+    return replaceCSSFunction(value, 'dvh', function (_ref) {
+      var percentage = _ref[0];
+      if (!percentage) return null;
+      return "calc(" + percentage + " * var(--dvh, 1dvh))";
+    });
   }
 
   /**
-   * PostCSS helper: Replace map-clamp(value, start1, stop1, start2, stop2) with map math expression
+   * Replaces `grid-space(fraction, inset?)` with a `calc()` expression for
+   * a column-based width using CSS custom properties `--vw`, `--grid-margin`, and `--grid-gutter`.
+   *
+   * @example
+   * ```css
+   * // Input
+   * div {
+   *  height: grid-space(6/12, 1);
+   * }
+   * ```
+   *
+   * ```css
+   * // Output
+   * div {
+   *  height: calc(6/12 * (calc(100 * var(--vw, 1vw)) - 2 * var(--grid-margin, 0px)) - (1 - 6/12) * var(--grid-gutter, 0px) + 1 * var(--grid-gutter, 0px));
+   * }
+   * ```
+   */
+  function gridSpace(value) {
+    return replaceCSSFunction(value, 'grid-space', function (_ref) {
+      var percentage = _ref[0],
+        _ref$ = _ref[1],
+        inset = _ref$ === void 0 ? '0' : _ref$;
+      if (!percentage) return null;
+      return "calc(" + percentage + " * (vw(100) - 2 * var(--grid-margin, 0px)) - (1 - " + percentage + ") * var(--grid-gutter, 0px) + " + inset + " * var(--grid-gutter, 0px))";
+    });
+  }
+
+  /**
+   * Replace interpolate(a, b, t) with a linear interpolation between two values.
+   *
+   * @example
+   * ```css
+   * // Input
+   * p {
+   *  font-size: interpolate(16px, 24px, 0.5);
+   * }
+   * ```
+   *
+   * ```css
+   * // Output
+   * p {
+   *  font-size: calc(16px * (1 - 0.5) + 24px * 0.5);
+   * }
+   * ```
+   */
+  function interpolate(value) {
+    return replaceCSSFunction(value, 'interpolate', function (_ref) {
+      var a = _ref[0],
+        b = _ref[1],
+        t = _ref[2];
+      if (!a || !b || !t) return null;
+      return "calc(" + a + " * (1 - " + t + ") + " + b + " * " + t + ")";
+    });
+  }
+
+  /**
+   * Replaces `lvh(n)` with `calc(n * var(--lvh, 1lvh))`.
+   *
+   * Uses a CSS custom property `--lvh` set by JS (large viewport height),
+   * falling back to the native `lvh` unit.
+   *
+   * @example
+   * ```css
+   * // Input
+   * div {
+   *  height: lvh(100);
+   * }
+   * ```
+   *
+   * ```css
+   * // Output
+   * div {
+   *  height: calc(100 * var(--lvh, 1lvh));
+   * }
+   * ```
+   */
+  function lvh(value) {
+    return replaceCSSFunction(value, 'lvh', function (_ref) {
+      var percentage = _ref[0];
+      if (!percentage) return null;
+      return "calc(" + percentage + " * var(--lvh, 1lvh))";
+    });
+  }
+
+  /**
+   * Replaces `map-clamp(val, start1, stop1, start2, stop2)` with a clamped linear map expression.
+   *
+   * Maps `val` from range [start1, stop1] to range [start2, stop2], clamped to the output range.
+   *
+   * @example
+   * ```css
+   * // Input
+   * div {
+   *  height: map-clamp(var(--progress, 0), .3, .8, 20px, 80px);
+   * }
+   * ```
+   *
+   * ```css
+   * // Output
+   * div {
+   *  height: clamp(min(20px, 80px), calc(20px + (80px - 20px) * ((var(--progress) - .3) / (.8 - .3))), max(20px, 80px));
+   *  // Progress at 0: height: 20px
+   *  // Progress at .3: height: 20px
+   *  // Progress at .55: height: 50px
+   *  // Progress at .8: height: 80px
+   *  // Progress at 1: height: 80px
+   * }
+   * ```
    */
   function mapClamp(value) {
-    if (!value.includes('map-clamp(')) {
-      return value;
-    }
-    var mapRangeClampPattern = /map-clamp\(/g;
-    var matches = [];
-    // Collect all matches first
-    var match;
-    while ((match = mapRangeClampPattern.exec(value)) !== null) {
-      matches.push(match.index);
-    }
-    // Process matches in reverse order to avoid index shifting
-    for (var idx = matches.length - 1; idx >= 0; idx--) {
-      var startIdx = matches[idx];
-      var funcName = 'map-clamp(';
-      // Find the matching closing parenthesis by counting depth
-      var depth = 1;
-      var i = startIdx + funcName.length;
-      var content = '';
-      // Extract content between parentheses
-      while (i < value.length && depth > 0) {
-        var _char = value[i];
-        if (_char === '(') {
-          depth++;
-          content += _char;
-        } else if (_char === ')') {
-          depth--;
-          if (depth > 0) {
-            // Still inside nested parentheses
-            content += _char;
-          }
-          // If depth === 0, we've found the closing paren - don't add it
-        } else {
-          content += _char;
-        }
-        i++;
-      }
-      if (depth !== 0) {
-        // Unmatched parentheses, skip this match
-        console.warn('map-clamp: unmatched parentheses, depth:', depth);
-        continue;
-      }
-      // Split on commas not inside parentheses (handles CSS vars)
-      var parts = [];
-      var current = '';
-      var parens = 0;
-      for (var j = 0; j < content.length; j++) {
-        var _char2 = content[j];
-        if (_char2 === '(') {
-          parens++;
-          current += _char2;
-        } else if (_char2 === ')') {
-          parens--;
-          current += _char2;
-        } else if (_char2 === ',') {
-          if (parens === 0) {
-            // Split here - we're at top level
-            var _trimmed = current.trim();
-            if (_trimmed) {
-              parts.push(_trimmed);
-            }
-            current = '';
-          } else {
-            // Inside nested parentheses, keep the comma
-            current += _char2;
-          }
-        } else {
-          current += _char2;
-        }
-      }
-      // Add the last part
-      var trimmed = current.trim();
-      if (trimmed) {
-        parts.push(trimmed);
-      }
-      if (parts.length !== 5) {
-        console.warn("map-clamp expects 5 arguments, got " + parts.length + ":", parts);
-        console.warn('Content was:', JSON.stringify(content));
-        console.warn('Full value was:', JSON.stringify(value.substring(startIdx, i)));
-        continue;
-      }
-      var val = parts[0],
-        start1 = parts[1],
-        stop1 = parts[2],
-        start2 = parts[3],
-        stop2 = parts[4];
-      var min = "min(" + start2 + ", " + stop2 + ")";
-      var max = "max(" + start2 + ", " + stop2 + ")";
-      var replacement = "clamp(" + min + ", calc(" + start2 + " + (" + stop2 + " - " + start2 + ") * ((" + val + " - " + start1 + ") / (" + stop1 + " - " + start1 + "))), " + max + ")";
-      // Replace the entire function call
-      value = value.substring(0, startIdx) + replacement + value.substring(i);
-    }
-    return value;
+    return replaceCSSFunction(value, 'map-clamp', function (_ref) {
+      var val = _ref[0],
+        start1 = _ref[1],
+        stop1 = _ref[2],
+        start2 = _ref[3],
+        stop2 = _ref[4];
+      if (!val || !start1 || !stop1 || !start2 || !stop2) return null;
+      return "clamp(min(" + start2 + ", " + stop2 + "), calc(" + start2 + " + (" + stop2 + " - " + start2 + ") * ((" + val + " - " + start1 + ") / (" + stop1 + " - " + start1 + "))), max(" + start2 + ", " + stop2 + "))";
+    });
   }
 
   /**
-   * PostCSS helper: Replace max-screen(value) with max({value}lvh, {value}vw)
+   * Replaces `max-screen(value)` with `max({value}lvh, {value}vw)`.
+   *
+   * Returns the larger of the value in large viewport height vs. width units,
+   * sizing relative to the larger viewport dimension.
+   *
+   * @example
+   * ```css
+   * // Input
+   * div {
+   *  height: max-screen(50);
+   *
+   *  --size: 50;
+   *  height: max-screen(var(--size)); // with CSS variable
+   * }
+   * ```
+   *
+   * ```css
+   * // Output
+   * div {
+   *  height: max(50lvh, 50vw);
+   *  height: max(calc(var(--size) * 1lvh), calc(var(--size) * 1vw)); // with CSS variable
+   * }
+   * ```
    */
   function maxScreen(value) {
-    var maxRegex = /max-screen\(([^)]+)\)/g;
-    if (maxRegex.test(value)) {
-      return value.replace(maxRegex, function (_, val) {
-        return "max(" + val + "lvh, " + val + "vw)";
-      });
-    }
-    return value;
+    return replaceCSSFunction(value, 'max-screen', function (_ref) {
+      var val = _ref[0];
+      if (!val) return null;
+      if (isNaN(parseFloat(val))) return "max(lvh(" + val + "), vw(" + val + "))";
+      return "max(lvh(" + val + "), vw(" + val + "))";
+    });
   }
 
   /**
-   * PostCSS helper: Replace min-screen(value) with min({value}lvh, {value}vw)
+   * Replaces `min-screen(value)` with `min({value}lvh, {value}vw)`.
+   *
+   * Returns the smaller of the value in large viewport height vs. width units,
+   * sizing relative to the smaller viewport dimension.
+   *
+   * @example
+   * ```css
+   * // Input
+   * div {
+   *  height: min-screen(50);
+   *
+   *  --size: 50;
+   *  height: min-screen(var(--size)); // with CSS variable
+   * }
+   * ```
+   *
+   * ```css
+   * // Output
+   * div {
+   *  height: min(50lvh, 50vw);
+   *  height: min(calc(var(--size) * 1lvh), calc(var(--size) * 1vw)); // with CSS variable
+   * }
+   * ```
    */
   function minScreen(value) {
-    var minRegex = /min-screen\(([^)]+)\)/g;
-    if (minRegex.test(value)) {
-      return value.replace(minRegex, function (_, val) {
-        return "min(" + val + "lvh, " + val + "vw)";
-      });
-    }
-    return value;
+    return replaceCSSFunction(value, 'min-screen', function (_ref) {
+      var val = _ref[0];
+      if (!val) return null;
+      if (isNaN(parseFloat(val))) return "min(lvh(" + val + "), vw(" + val + "))";
+      return "min(lvh(" + val + "), vw(" + val + "))";
+    });
+  }
+
+  var ROOT_SIZE = 16;
+  /**
+   * Replaces `rem(pixels)` with a rem value based on a root font size.
+   * Default is a 16px root font size.
+   *
+   * @example
+   * ```css
+   * // Input
+   * p {
+   *  font-size: rem(24);
+   *  font-size: rem(24, 20); // with custom root size
+   *
+   *  --font-size: 24px;
+   *  font-size: rem(var(--font-size)); // with CSS variable
+   *
+   * --root-font-size: 20px;
+   * font-size: rem(var(--font-size), var(--root-font-size)); // with CSS variables
+   * }
+   * ```
+   *
+   * ```css
+   * // Output
+   * p {
+   *  font-size: 1.5rem;
+   *  font-size: 1.2rem; // with custom root size
+   *  font-size: calc(var(--font-size) / 16 * 1rem); // with CSS variable
+   *  font-size: calc(var(--font-size) / var(--root-font-size) * 1rem); // with CSS variables
+   * }
+   * ```
+   */
+  function rem(value) {
+    return replaceCSSFunction(value, 'rem', function (_ref) {
+      var pixels = _ref[0],
+        rootSize = _ref[1];
+      if (!pixels) return null;
+      var pxNum = parseFloat(pixels);
+      var rootNum = rootSize ? parseFloat(rootSize) : ROOT_SIZE;
+      var rootVal = rootSize != null ? rootSize : String(ROOT_SIZE);
+      if (!isNaN(rootNum) && rootNum === 0) return null;
+      if (!isNaN(pxNum) && !isNaN(rootNum)) return pxNum / rootNum + "rem";
+      return "calc(" + pixels + " / " + (isNaN(rootNum) ? rootVal : rootNum) + " * 1rem)";
+    });
   }
 
   /**
-   * Converts pixel values to rem units based on a configurable root font size.
+   * Replaces `responsive-value(minSize, maxSize, breakpoint)` with a fluid
+   * `clamp()` expression that scales linearly between `minSize` and `maxSize`
+   * across the viewport width up to `breakpoint`.
    *
-   * Example usage:
-   * ```js
-   * const fontSize = rem(16);     // Returns "1rem" (if root is 16px)
-   * const margin = rem("24px");   // Returns "1.5rem" (if root is 16px)
-   * const padding = rem(8);       // Returns "0.5rem" (if root is 16px)
-   * const spacing = rem("32px");  // Returns "2rem" (if root is 16px)
+   * @example
+   * ```css
+   * // Input
+   * p {
+   *  font-size: responsive-value(30px, 60px, 1800px);
+   *
+   *  --font-size: 30px;
+   *  --max-size: 60px;
+   *  --breakpoint: 1800px;
+   *  font-size: responsive-value(var(--font-size), var(--max-size), var(--breakpoint)); // with CSS variables
+   * }
    * ```
    *
-   * @param {number | string} pixels - The pixel value to convert to rem (number or string with "px").
-   * @param {number} rootSize - The root font size in pixels. Defaults to 16.
-   * @return {string} The calculated rem value as a string.
-   */
-  function rem(pixels, rootSize) {
-    if (rootSize === void 0) {
-      rootSize = 16;
-    }
-    // Parse the pixels value if it's a string
-    var pixelValue = typeof pixels === 'string' ? parseFloat(pixels.replace('px', '')) : pixels;
-    var remValue = pixelValue / rootSize;
-    // Trailing space to preserve spacing in CSS output
-    return remValue + "rem ";
-  }
-
-  var responsiveValue = function responsiveValue(minSize, maxSize, breakpoint) {
-    // Calculate delta as the ratio of max-size to breakpoint
-    var delta = parseFloat(maxSize) / parseFloat(breakpoint);
-    // Construct the `clamp()` function for responsive font size
-    return "clamp(" + minSize + ", calc(" + delta + " * var(--vw, 1vw) * 100), " + maxSize + ")";
-  };
-
-  /**
-   * Calculates a percentage of the viewport small height (svh).
-   *
-   * Example usage:
-   * ```js
-   * const height = svh(100); // Returns "calc(100 * var(--svh, 1svh))"
+   * ```css
+   * // Output
+   * p {
+   *  font-size: clamp(30px, calc(0.0333 * var(--vw, 1vw) * 100), 60px);
+   *  font-size: clamp(var(--font-size), calc(var(--max-size) / var(--breakpoint) * var(--vw, 1vw) * 100), var(--max-size)); // with CSS variables
+   * }
    * ```
-   *
-   * @param {number} percentage - The percentage of the small viewport height.
-   * @return {string} The calculated CSS value as a string.
    */
-  function svh(percentage) {
-    return "calc(" + percentage + " * var(--svh, 1svh))";
+  function responsiveValue(value) {
+    return replaceCSSFunction(value, 'responsive-value', function (_ref) {
+      var minSize = _ref[0],
+        maxSize = _ref[1],
+        breakpoint = _ref[2];
+      if (!minSize || !maxSize || !breakpoint) return null;
+      var maxNum = parseFloat(maxSize);
+      var bpNum = parseFloat(breakpoint);
+      var fluid = !isNaN(maxNum) && !isNaN(bpNum) ? "calc(vw(" + maxNum / bpNum + ") * 100)" : "calc(vw(" + maxSize + " / " + breakpoint + ") * 100)";
+      return "clamp(" + minSize + ", " + fluid + ", " + maxSize + ")";
+    });
   }
 
   /**
-   * Calculates a percentage of the viewport width (vw).
+   * Replaces `svh(n)` with `calc(n * var(--svh, 1svh))`.
    *
-   * Example usage:
-   * ```js
-   * const width = vw(100); // Returns "calc(100 * var(--vw, 1vw))"
+   * Uses a CSS custom property `--svh` set by JS (small viewport height),
+   * falling back to the native `svh` unit.
+   *
+   * @example
+   * ```css
+   * // Input
+   * div {
+   *  height: svh(100);
+   * }
    * ```
    *
-   * @param {number} percentage - The percentage of the viewport width.
-   * @return {string} The calculated CSS value as a string.
+   * ```css
+   * // Output
+   * div {
+   *  height: calc(100 * var(--svh, 1svh));
+   * }
+   * ```
    */
-  function vw(percentage) {
-    return "calc(" + percentage + " * var(--vw, 1vw))";
+  function svh(value) {
+    return replaceCSSFunction(value, 'svh', function (_ref) {
+      var percentage = _ref[0];
+      if (!percentage) return null;
+      return "calc(" + percentage + " * var(--svh, 1svh))";
+    });
+  }
+
+  /**
+   * Replaces `vw(n)` with `calc(n * var(--vw, 1vw))`.
+   *
+   * Uses a CSS custom property `--vw` set by JS to avoid the scrollbar width
+   * that `100vw` includes on desktop browsers, falling back to the native `vw` unit.
+   *
+   * @example
+   * ```css
+   * // Input
+   * div {
+   *  width: vw(100);
+   * }
+   * ```
+   *
+   * ```css
+   * // Output
+   * div {
+   *  width: calc(100 * var(--vw, 1vw));
+   * }
+   * ```
+   */
+  function vw(value) {
+    return replaceCSSFunction(value, 'vw', function (_ref) {
+      var percentage = _ref[0];
+      if (!percentage) return null;
+      return "calc(" + percentage + " * var(--vw, 1vw))";
+    });
   }
 
   var DEFAULT_HELPERS = [{

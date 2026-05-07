@@ -1,12 +1,22 @@
 /**
- * Calculates a percentage of the viewport width (vw).
+ * Replaces `vw(n)` with `calc(n * var(--vw, 1vw))`.
  *
- * Example usage:
- * ```js
- * const width = vw(100); // Returns "calc(100 * var(--vw, 1vw))"
+ * Uses a CSS custom property `--vw` set by JS to avoid the scrollbar width
+ * that `100vw` includes on desktop browsers, falling back to the native `vw` unit.
+ *
+ * @example
+ * ```css
+ * // Input
+ * div {
+ *  width: vw(100);
+ * }
  * ```
  *
- * @param {number} percentage - The percentage of the viewport width.
- * @return {string} The calculated CSS value as a string.
+ * ```css
+ * // Output
+ * div {
+ *  width: calc(100 * var(--vw, 1vw));
+ * }
+ * ```
  */
-export default function vw(percentage: number): string;
+export default function vw(value: string): string;

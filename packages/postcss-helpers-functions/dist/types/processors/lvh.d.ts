@@ -1,12 +1,22 @@
 /**
- * Calculates a percentage of the viewport large height (lvh).
+ * Replaces `lvh(n)` with `calc(n * var(--lvh, 1lvh))`.
  *
- * Example usage:
- * ```js
- * const height = lvh(100); // Returns "calc(100 * var(--lvh, 1lvh))"
+ * Uses a CSS custom property `--lvh` set by JS (large viewport height),
+ * falling back to the native `lvh` unit.
+ *
+ * @example
+ * ```css
+ * // Input
+ * div {
+ *  height: lvh(100);
+ * }
  * ```
  *
- * @param {number} percentage - The percentage of the large viewport height.
- * @return {string} The calculated CSS value as a string.
+ * ```css
+ * // Output
+ * div {
+ *  height: calc(100 * var(--lvh, 1lvh));
+ * }
+ * ```
  */
-export default function lvh(percentage: number): string;
+export default function lvh(value: string): string;

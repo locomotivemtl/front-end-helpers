@@ -1,16 +1,30 @@
 /**
- * Converts pixel values to rem units based on a configurable root font size.
+ * Replaces `rem(pixels)` with a rem value based on a root font size.
+ * Default is a 16px root font size.
  *
- * Example usage:
- * ```js
- * const fontSize = rem(16);     // Returns "1rem" (if root is 16px)
- * const margin = rem("24px");   // Returns "1.5rem" (if root is 16px)
- * const padding = rem(8);       // Returns "0.5rem" (if root is 16px)
- * const spacing = rem("32px");  // Returns "2rem" (if root is 16px)
+ * @example
+ * ```css
+ * // Input
+ * p {
+ *  font-size: rem(24);
+ *  font-size: rem(24, 20); // with custom root size
+ *
+ *  --font-size: 24px;
+ *  font-size: rem(var(--font-size)); // with CSS variable
+ *
+ * --root-font-size: 20px;
+ * font-size: rem(var(--font-size), var(--root-font-size)); // with CSS variables
+ * }
  * ```
  *
- * @param {number | string} pixels - The pixel value to convert to rem (number or string with "px").
- * @param {number} rootSize - The root font size in pixels. Defaults to 16.
- * @return {string} The calculated rem value as a string.
+ * ```css
+ * // Output
+ * p {
+ *  font-size: 1.5rem;
+ *  font-size: 1.2rem; // with custom root size
+ *  font-size: calc(var(--font-size) / 16 * 1rem); // with CSS variable
+ *  font-size: calc(var(--font-size) / var(--root-font-size) * 1rem); // with CSS variables
+ * }
+ * ```
  */
-export default function rem(pixels: number | string, rootSize?: number): string;
+export default function rem(value: string): string;

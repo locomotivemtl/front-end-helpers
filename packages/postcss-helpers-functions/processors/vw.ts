@@ -1,4 +1,4 @@
-import { replaceCSSFunction } from './_utils.ts';
+import { replaceCSSFunction } from './_utils';
 
 /**
  * Replaces `vw(n)` with `calc(n * var(--vw, 1vw))`.

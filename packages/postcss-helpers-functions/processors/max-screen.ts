@@ -1,4 +1,4 @@
-import { replaceCSSFunction } from './_utils.ts';
+import { replaceCSSFunction } from './_utils';
 
 /**
  * Replaces `max-screen(value)` with `max({value}lvh, {value}vw)`.

@@ -1,4 +1,4 @@
-import { replaceCSSFunction } from './_utils.ts';
+import { replaceCSSFunction } from './_utils';
 
 /**
  * Replaces `map-clamp(val, start1, stop1, start2, stop2)` with a clamped linear map expression.

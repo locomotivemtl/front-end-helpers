@@ -1,4 +1,4 @@
-import { replaceCSSFunction } from './_utils.ts';
+import { replaceCSSFunction } from './_utils';
 
 /**
  * Replace interpolate(a, b, t) with a linear interpolation between two values.

@@ -1,4 +1,4 @@
-import { replaceCSSFunction } from './_utils.ts';
+import { replaceCSSFunction } from './_utils';
 
 const ROOT_SIZE = 16;
 

@@ -1,4 +1,4 @@
-import { replaceCSSFunction } from './_utils.ts';
+import { replaceCSSFunction } from './_utils';
 
 /**
  * Replaces `min-screen(value)` with `min({value}lvh, {value}vw)`.

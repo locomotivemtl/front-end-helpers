@@ -1,4 +1,4 @@
-import { replaceCSSFunction } from './_utils.ts';
+import { replaceCSSFunction } from './_utils';
 
 /**
  * Replaces `svh(n)` with `calc(n * var(--svh, 1svh))`.

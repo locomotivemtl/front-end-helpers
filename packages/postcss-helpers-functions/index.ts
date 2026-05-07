@@ -1,16 +1,16 @@
 import type { Declaration } from 'postcss';
 
-import dvh from './processors/dvh.ts';
-import gridSpace from './processors/grid-space.ts';
-import interpolate from './processors/interpolate.ts';
-import lvh from './processors/lvh.ts';
-import mapClamp from './processors/map-clamp.ts';
-import maxScreen from './processors/max-screen.ts';
-import minScreen from './processors/min-screen.ts';
-import rem from './processors/rem.ts';
-import responsiveValue from './processors/responsive-value.ts';
-import svh from './processors/svh.ts';
-import vw from './processors/vw.ts';
+import dvh from './processors/dvh';
+import gridSpace from './processors/grid-space';
+import interpolate from './processors/interpolate';
+import lvh from './processors/lvh';
+import mapClamp from './processors/map-clamp';
+import maxScreen from './processors/max-screen';
+import minScreen from './processors/min-screen';
+import rem from './processors/rem';
+import responsiveValue from './processors/responsive-value';
+import svh from './processors/svh';
+import vw from './processors/vw';
 
 export type PostCSSProcessorHelper = {
     name: string;

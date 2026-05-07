@@ -1,16 +1,16 @@
 import type { Declaration } from 'postcss';
 
-import dvh from './processors/dvh';
-import gridSpace from './processors/grid-space';
-import interpolate from './processors/interpolate';
-import lvh from './processors/lvh';
-import mapClamp from './processors/map-clamp';
-import maxScreen from './processors/max-screen';
-import minScreen from './processors/min-screen';
-import rem from './processors/rem';
-import responsiveValue from './processors/responsive-value';
-import svh from './processors/svh';
-import vw from './processors/vw';
+import dvh from './processors/dvh.ts';
+import gridSpace from './processors/grid-space.ts';
+import interpolate from './processors/interpolate.ts';
+import lvh from './processors/lvh.ts';
+import mapClamp from './processors/map-clamp.ts';
+import maxScreen from './processors/max-screen.ts';
+import minScreen from './processors/min-screen.ts';
+import rem from './processors/rem.ts';
+import responsiveValue from './processors/responsive-value.ts';
+import svh from './processors/svh.ts';
+import vw from './processors/vw.ts';
 
 export type PostCSSProcessorHelper = {
     name: string;
@@ -18,50 +18,17 @@ export type PostCSSProcessorHelper = {
 };
 
 const DEFAULT_HELPERS = <PostCSSProcessorHelper[]>[
-    {
-        name: 'grid-space',
-        processor: gridSpace
-    },
-    {
-        name: 'responsive-value',
-        processor: responsiveValue
-    },
-    {
-        name: 'dvh',
-        processor: dvh
-    },
-    {
-        name: 'svh',
-        processor: svh
-    },
-    {
-        name: 'lvh',
-        processor: lvh
-    },
-    {
-        name: 'vw',
-        processor: vw
-    },
-    {
-        name: 'rem',
-        processor: rem
-    },
-    {
-        name: 'min-screen',
-        processor: minScreen
-    },
-    {
-        name: 'max-screen',
-        processor: maxScreen
-    },
-    {
-        name: 'map-clamp',
-        processor: mapClamp
-    },
-    {
-        name: 'interpolate',
-        processor: interpolate
-    }
+    { name: 'grid-space', processor: gridSpace },
+    { name: 'responsive-value', processor: responsiveValue },
+    { name: 'dvh', processor: dvh },
+    { name: 'svh', processor: svh },
+    { name: 'lvh', processor: lvh },
+    { name: 'vw', processor: vw },
+    { name: 'rem', processor: rem },
+    { name: 'min-screen', processor: minScreen },
+    { name: 'max-screen', processor: maxScreen },
+    { name: 'map-clamp', processor: mapClamp },
+    { name: 'interpolate', processor: interpolate }
 ];
 
 /**
@@ -72,7 +39,7 @@ const postcssProcessorHelpers = (helpers: PostCSSProcessorHelper[] = []) => {
 
     // Create regex pattern to match any helper processor: min-screen(, max-screen(, map-range-clamp(
     const helperPattern = new RegExp(
-        `(${helpersList.map((h) => h.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\s*\\(`,
+        `(${helpersList.map(h => h.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\s*\\(`,
         'g'
     );
 

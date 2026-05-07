@@ -1,14 +1,29 @@
+import { replaceCSSFunction } from './_utils.ts';
+
 /**
- * Calculates a percentage of the viewport dynamic height (dvh).
+ * Replaces `dvh(n)` with `calc(n * var(--dvh, 1dvh))`.
  *
- * Example usage:
- * ```js
- * const height = dvh(100); // Returns "calc(100 * var(--dvh, 1dvh))"
+ * Uses a CSS custom property `--dvh` set by JS to work around iOS Safari's
+ * dynamic viewport height bug, falling back to the native `dvh` unit.
+ *
+ * @example
+ * ```css
+ * // Input
+ * div {
+ *  height: dvh(100);
+ * }
  * ```
  *
- * @param {number} percentage - The percentage of the dynamic viewport height.
- * @return {string} The calculated CSS value as a string.
+ * ```css
+ * // Output
+ * div {
+ *  height: calc(100 * var(--dvh, 1dvh));
+ * }
+ * ```
  */
-export default function dvh(percentage: number): string {
-    return `calc(${percentage} * var(--dvh, 1dvh))`;
+export default function dvh(value: string): string {
+    return replaceCSSFunction(value, 'dvh', ([percentage]) => {
+        if (!percentage) return null;
+        return `calc(${percentage} * var(--dvh, 1dvh))`;
+    });
 }

@@ -1,23 +1,27 @@
+import { replaceCSSFunction } from './_utils.ts';
+
 /**
- * Generates a CSS `calc()` string to calculate a percentage of the grid cell width,
- * with an optional grid gutter inset.
+ * Replaces `grid-space(fraction, inset?)` with a `calc()` expression for
+ * a column-based width using CSS custom properties `--vw`, `--grid-margin`, and `--grid-gutter`.
  *
- * This function mimics the behavior of a Sass function and is suitable for use in PostCSS plugins.
- *
- * Example usage:
- * ```js
- * gridSpace(6/12); // Calculates a width based on 6/12 of the grid
- * gridSpace(1/12, 1); // Calculates with a gutter inset
+ * @example
+ * ```css
+ * // Input
+ * div {
+ *  height: grid-space(6/12, 1);
+ * }
  * ```
  *
- * @param {number} percentage - The fraction of the grid (e.g., 6/12 or 0.5 for half the grid width).
- * @param {number} [inset=0] - An optional inset multiplier for the grid gutter (default is 0).
- * @returns {string} - The CSS `calc()` string for the grid spacing.
+ * ```css
+ * // Output
+ * div {
+ *  height: calc(6/12 * (calc(100 * var(--vw, 1vw)) - 2 * var(--grid-margin, 0px)) - (1 - 6/12) * var(--grid-gutter, 0px) + 1 * var(--grid-gutter, 0px));
+ * }
+ * ```
  */
-export default function gridSpace(percentage: number, inset: number = 0): string {
-    return `calc(
-        ${percentage} * (calc(var(--vw, 1vw) * 100) - 2 * var(--grid-margin, 0px)) -
-        (1 - ${percentage}) * var(--grid-gutter, 0px) +
-        ${inset} * var(--grid-gutter, 0px)
-    )`;
+export default function gridSpace(value: string): string {
+    return replaceCSSFunction(value, 'grid-space', ([percentage, inset = '0']) => {
+        if (!percentage) return null;
+        return `calc(${percentage} * (vw(100) - 2 * var(--grid-margin, 0px)) - (1 - ${percentage}) * var(--grid-gutter, 0px) + ${inset} * var(--grid-gutter, 0px))`;
+    });
 }

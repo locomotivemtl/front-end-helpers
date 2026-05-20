@@ -12,6 +12,7 @@ export default class GridHelper {
     private breakpoints;
     private currentBreakpointConfig;
     private previousBreakpointConfig;
+    private container;
     private gridContainer;
     private isActive;
     private ctrlDown;

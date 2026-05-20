@@ -32,6 +32,7 @@
    */
   var GridHelper = /*#__PURE__*/function () {
     function GridHelper(config) {
+      var _config$container;
       if (config === void 0) {
         config = {};
       }
@@ -39,9 +40,12 @@
       this.breakpoints = void 0;
       this.currentBreakpointConfig = void 0;
       this.previousBreakpointConfig = null;
+      this.container = void 0;
       this.gridContainer = void 0;
       this.isActive = false;
       this.ctrlDown = false;
+      this.container = (_config$container = config.container) != null ? _config$container : document.body;
+      delete config.container;
       var mergedConfig = this.mergeConfig(config, defaultConfig);
       this.sharedConfig = mergedConfig;
       this.breakpoints = mergedConfig.breakpoints || {};
@@ -50,7 +54,7 @@
       this.previousBreakpointConfig = this.currentBreakpointConfig;
       // Initialize the grid container
       this.gridContainer = document.createElement('div');
-      document.body.append(this.gridContainer);
+      this.container.append(this.gridContainer);
       this.initialize();
     }
     /**
@@ -103,7 +107,7 @@
     _proto.setGridHelperStyles = function setGridHelperStyles() {
       var elStyles = this.gridContainer.style;
       elStyles.zIndex = '10000';
-      elStyles.position = 'fixed';
+      elStyles.position = this.container === document.body ? 'fixed' : 'absolute';
       elStyles.top = '0';
       elStyles.left = '0';
       elStyles.display = 'flex';

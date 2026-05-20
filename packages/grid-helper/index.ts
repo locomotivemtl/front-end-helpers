@@ -23,11 +23,15 @@ export default class GridHelper {
     private breakpoints: { [key: string]: Partial<GridHelperBreakpointConfig> };
     private currentBreakpointConfig: GridHelperBreakpointConfig;
     private previousBreakpointConfig: GridHelperBreakpointConfig | null = null;
+    private container: HTMLElement;
     private gridContainer: HTMLElement;
     private isActive: boolean = false;
     private ctrlDown: boolean = false;
 
     constructor(config: Partial<GridHelperConfig> = {}) {
+        this.container = config.container ?? document.body;
+        delete config.container;
+
         const mergedConfig = this.mergeConfig(config, defaultConfig);
         this.sharedConfig = mergedConfig;
         this.breakpoints = mergedConfig.breakpoints || {};
@@ -38,7 +42,7 @@ export default class GridHelper {
 
         // Initialize the grid container
         this.gridContainer = document.createElement('div');
-        document.body.append(this.gridContainer);
+        this.container.append(this.gridContainer);
 
         this.initialize();
     }
@@ -103,7 +107,7 @@ export default class GridHelper {
     private setGridHelperStyles() {
         const elStyles = this.gridContainer.style;
         elStyles.zIndex = '10000';
-        elStyles.position = 'fixed';
+        elStyles.position = this.container === document.body ? 'fixed' : 'absolute';
         elStyles.top = '0';
         elStyles.left = '0';
         elStyles.display = 'flex';

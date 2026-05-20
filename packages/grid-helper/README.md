@@ -8,6 +8,7 @@ The `GridHelper` class is a utility that creates an overlay grid for web develop
 - Define grid structure: number of columns, gutter width, margin, color, and opacity.
 - Supports custom breakpoints, allowing different grid configurations at various screen widths.
 - Automatically updates the grid when the window is resized.
+- Mount the grid overlay inside a specific element instead of `document.body`.
 
 ## Installation
 
@@ -44,6 +45,21 @@ const gridHelper = new GridHelper({
 });
 ```
 
+### Custom Container
+
+By default, the grid overlays the full page (`document.body`, `position: fixed`). Pass a `container` element to mount it inside a specific element instead (`position: absolute`):
+
+```js
+const gridHelper = new GridHelper({
+    container: document.querySelector('.my-wrapper'),
+    columns: 12,
+});
+```
+
+> **Note:** The container element must have a non-static CSS position (e.g. `position: relative`) for the overlay to be positioned correctly.
+
+### CSS Variables
+
 You can also use CSS variables to bind them with your CSS logic, especially for `columns`, `gutterWidth`, and `marginWidth`. This can be useful in cases where you dynamically update CSS variables within media queries.
 
 ```js
@@ -67,6 +83,7 @@ const gridHelper = new GridHelper({
 | `opacity`     | `0.1`         | `number`            | Opacity of the grid.                                                        |
 | `key`         | `'g'`         | `string`            | Key to toggle the grid visibility (with Control key).                       |
 | `breakpoints` | `undefined`   | `object`            | Breakpoint configurations for responsive grids.                             |
+| `container`   | `document.body` | `HTMLElement`     | Element to mount the grid into. Uses `position: absolute` when set.         |
 
 ### Breakpoint Options
 

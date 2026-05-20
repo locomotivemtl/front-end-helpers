@@ -1,79 +1,72 @@
-import gridSpace from './functions/grid-space';
-import responsiveValue from './functions/responsive-value';
-import dvh from './functions/dvh';
-import svh from './functions/svh';
-import lvh from './functions/lvh';
-import vw from './functions/vw';
-import rem from './functions/rem';
+import type { Declaration } from 'postcss';
 
-const helpersFunctionsAliasesMap = [
-    {
-        functionIdent: 'grid-space',
-        function: gridSpace
-    },
-    {
-        functionIdent: 'responsive-value',
-        function: responsiveValue
-    },
-    {
-        functionIdent: 'dvh',
-        function: dvh
-    },
-    {
-        functionIdent: 'svh',
-        function: svh
-    },
-    {
-        functionIdent: 'lvh',
-        function: lvh
-    },
-    {
-        functionIdent: 'vw',
-        function: vw
-    },
-    {
-        functionIdent: 'rem',
-        function: rem
-    }
+import dvh from './processors/dvh';
+import gridSpace from './processors/grid-space';
+import interpolate from './processors/interpolate';
+import lvh from './processors/lvh';
+import mapClamp from './processors/map-clamp';
+import maxScreen from './processors/max-screen';
+import minScreen from './processors/min-screen';
+import rem from './processors/rem';
+import responsiveValue from './processors/responsive-value';
+import svh from './processors/svh';
+import vw from './processors/vw';
+
+export type PostCSSProcessorHelper = {
+    name: string;
+    processor: (value: string) => string;
+};
+
+const DEFAULT_HELPERS = <PostCSSProcessorHelper[]>[
+    { name: 'grid-space', processor: gridSpace },
+    { name: 'responsive-value', processor: responsiveValue },
+    { name: 'dvh', processor: dvh },
+    { name: 'svh', processor: svh },
+    { name: 'lvh', processor: lvh },
+    { name: 'vw', processor: vw },
+    { name: 'rem', processor: rem },
+    { name: 'min-screen', processor: minScreen },
+    { name: 'max-screen', processor: maxScreen },
+    { name: 'map-clamp', processor: mapClamp },
+    { name: 'interpolate', processor: interpolate }
 ];
 
-const postcssHelpersFunctions = (options = {}) => {
+/**
+ * PostCSS plugin that processes custom CSS helper functions
+ */
+const postcssProcessorHelpers = (helpers: PostCSSProcessorHelper[] = []) => {
+    const helpersList = [...DEFAULT_HELPERS, ...helpers];
+
+    // Create regex pattern to match any helper processor: min-screen(, max-screen(, map-range-clamp(
+    const helperPattern = new RegExp(
+        `(${helpersList.map(h => h.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\s*\\(`,
+        'g'
+    );
+
     return {
-        postcssPlugin: 'postcss-helpers-functions',
+        helpers: helpersList,
+        regex: helperPattern,
+        postcssPlugin: 'postcss-helpers',
+        Declaration(decl: Declaration) {
+            let value = decl.value;
 
-        async Root(root) {
-            root.walkDecls((decl) => {
-                // Create a concatenated regular expression pattern for all functionIdent values
-                const functionIdents = helpersFunctionsAliasesMap
-                    .map((alias) => {
-                        return alias.functionIdent;
-                    })
-                    .join('|');
+            // Test if any helper function is present using regex
+            if (helperPattern.test(value)) {
+                // Reset regex lastIndex for processing
+                helperPattern.lastIndex = 0;
 
-                const regex = new RegExp(
-                    `\\b(${functionIdents})\\s*\\(\\s*['"]?([^'")]+)?['"]?\\s*\\)`,
-                    'g'
-                );
+                // Process each helper in sequence
+                // Each helper checks internally if it needs to process the value
+                for (const helper of helpersList) {
+                    value = helper.processor(value);
+                }
 
-                // Replace the function with the selected function result
-                decl.value = decl.value.replace(regex, (match, ident, value) => {
-                    const targetFunction = helpersFunctionsAliasesMap.find((alias) => {
-                        return alias.functionIdent === ident;
-                    });
-
-                    if (targetFunction) {
-                        const args = value.split(',').map((arg) => arg.trim());
-                        return targetFunction.function.apply(null, args);
-                    }
-
-                    // Return the original value if no match is found
-                    return match;
-                });
-            });
+                decl.value = value;
+            }
         }
     };
 };
 
-postcssHelpersFunctions.postcss = true;
+postcssProcessorHelpers.postcss = true;
 
-export default postcssHelpersFunctions;
+export default postcssProcessorHelpers;

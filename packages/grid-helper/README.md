@@ -10,6 +10,7 @@ The `GridHelper` class is a utility that creates an overlay grid for web develop
 - Automatically updates the grid when the window is resized.
 - Mount the grid overlay inside a specific element instead of `document.body`.
 - Remembers whether the grid is visible across page reloads, for the current tab.
+- Gutter and margin accept any CSS length, including `vw`, `vmin` and `vmax`.
 
 ## Installation
 
@@ -46,6 +47,19 @@ const gridHelper = new GridHelper({
 });
 ```
 
+A breakpoint key is the minimum viewport width in pixels. A breakpoint overrides the main options; it does not inherit from narrower breakpoints.
+
+### Viewport Units
+
+`gutterWidth` and `marginWidth` are passed to CSS as they are, so they accept any CSS length or expression, including `vw`, `vmin`, `vmax`, `calc()` and `clamp()`:
+
+```js
+const gridHelper = new GridHelper({
+    gutterWidth: '2vmin',
+    marginWidth: 'clamp(16px, 4vmax, 64px)'
+});
+```
+
 ### Custom Container
 
 By default, the grid overlays the full page (`document.body`, `position: fixed`). Pass a `container` element to mount it inside a specific element instead (`position: absolute`):
@@ -71,6 +85,8 @@ const gridHelper = new GridHelper({
 });
 ```
 
+The `columns` variable is read from the grid element, so it can be set on `:root` or on the container. It must hold a plain number. If it cannot be read, the grid falls back to 12 columns.
+
 ### Visible State
 
 The grid remembers whether it is visible in `sessionStorage`, so it stays on when the page reloads and resets when the tab closes. The state is stored per toggle key.
@@ -89,9 +105,9 @@ gridHelper.destroy();
 
 | Option        | Default Value | Type                | Description                                                                 |
 |---------------|---------------|---------------------|-----------------------------------------------------------------------------|
-| `columns`     | `12`          | `number \| string`  | Number of columns in the grid or a CSS variable for columns.                |
-| `gutterWidth` | `'16px'`      | `string \| CSSVariable` | Width of the gutters between columns or a CSS variable for gutter width.    |
-| `marginWidth` | `'16px'`      | `string \| CSSVariable` | Width of the margins around the grid or a CSS variable for margin width.    |
+| `columns`     | `12`          | `number \| CSSVariable` | Number of columns in the grid or a CSS variable for columns.            |
+| `gutterWidth` | `'16px'`      | `string`            | Width of the gutters between columns. Any CSS length, variable or expression. |
+| `marginWidth` | `'16px'`      | `string`            | Width of the margins around the grid. Any CSS length, variable or expression. |
 | `color`       | `'red'`       | `string`            | Color of the grid in CSS format.                                            |
 | `opacity`     | `0.1`         | `number`            | Opacity of the grid.                                                        |
 | `key`         | `'g'`         | `string`            | Key to toggle the grid visibility (with Control key).                       |
@@ -102,12 +118,11 @@ gridHelper.destroy();
 
 | Option        | Type                     | Description                                                   |
 |---------------|--------------------------|---------------------------------------------------------------|
-| `columns`     | `number \| string`       | Number of columns in the grid or a CSS variable for columns.  |
-| `gutterWidth` | `string \| CSSVariable`  | Width of the gutters between columns or a CSS variable for gutter width. |
-| `marginWidth` | `string \| CSSVariable`  | Width of the margins around the grid or a CSS variable for margin width. |
+| `columns`     | `number \| CSSVariable`  | Number of columns in the grid or a CSS variable for columns.  |
+| `gutterWidth` | `string`                 | Width of the gutters between columns. Any CSS length, variable or expression. |
+| `marginWidth` | `string`                 | Width of the margins around the grid. Any CSS length, variable or expression. |
 | `color`       | `string`                 | Color of the grid in CSS format.                               |
 | `opacity`     | `number`                 | Opacity of the grid.                                           |
-| `key`         | `string`                 | Key to toggle the grid visibility (with Control key).          |
 
 ## Methods
 

@@ -16,14 +16,14 @@
     },
     "type": "module",
     "source": "index.ts",
-    "main": "dist/grid-helper.js",
+    "main": "dist/grid-helper.cjs",
     "umd:main": "dist/grid-helper.umd.js",
     "module": "dist/grid-helper.mjs",
     "types": "dist/types/index.d.ts",
     "exports": {
         ".": {
             "types": "./dist/types/index.d.ts",
-            "require": "./dist/grid-helper.js",
+            "require": "./dist/grid-helper.cjs",
             "default": "./dist/grid-helper.modern.mjs"
         },
         "./dist/*": "./dist/*"

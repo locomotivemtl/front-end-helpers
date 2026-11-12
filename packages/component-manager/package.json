@@ -16,14 +16,14 @@
     },
     "type": "module",
     "source": "index.ts",
-    "main": "dist/component-manager.js",
+    "main": "dist/component-manager.cjs",
     "umd:main": "dist/component-manager.umd.js",
     "module": "dist/component-manager.mjs",
     "types": "dist/types/index.d.ts",
     "exports": {
         ".": {
             "types": "./dist/types/index.d.ts",
-            "require": "./dist/component-manager.js",
+            "require": "./dist/component-manager.cjs",
             "default": "./dist/component-manager.modern.mjs"
         },
         "./dist/*": "./dist/*"

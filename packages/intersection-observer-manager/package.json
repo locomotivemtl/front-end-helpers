@@ -16,14 +16,14 @@
     },
     "type": "module",
     "source": "index.ts",
-    "main": "dist/intersection-observer-manager.js",
+    "main": "dist/intersection-observer-manager.cjs",
     "umd:main": "dist/intersection-observer-manager.umd.js",
     "module": "dist/intersection-observer-manager.mjs",
     "types": "dist/types/index.d.ts",
     "exports": {
         ".": {
             "types": "./dist/types/index.d.ts",
-            "require": "./dist/intersection-observer-manager.js",
+            "require": "./dist/intersection-observer-manager.cjs",
             "default": "./dist/intersection-observer-manager.modern.mjs"
         },
         "./dist/*": "./dist/*"

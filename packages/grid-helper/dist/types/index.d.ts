@@ -1,4 +1,4 @@
-import { GridHelperConfig } from './types';
+import type { GridHelperConfig } from './types';
 /**
  * Grid Helper
  *
@@ -11,25 +11,23 @@ export default class GridHelper {
     private sharedConfig;
     private breakpoints;
     private currentBreakpointConfig;
-    private previousBreakpointConfig;
     private container;
     private gridContainer;
+    private storageKey;
     private isActive;
-    private ctrlDown;
     constructor(config?: Partial<GridHelperConfig>);
     /**
-     * Deep merge user config with default config
+     * Remove the grid overlay and its event listeners.
      */
-    private mergeConfig;
-    /**
-     * Initialize the grid helper by setting styles, columns, and events.
-     */
-    private initialize;
+    destroy(): void;
     /**
      * Get the current breakpoint configuration based on the window width.
      */
     private getBreakpointConfig;
-    private extractCSSVariable;
+    /**
+     * Resolve the column count, reading the CSS variable when `columns` is one.
+     */
+    private getColumnCount;
     /**
      * Set grid container styles.
      */
@@ -39,20 +37,26 @@ export default class GridHelper {
      */
     private setGridHelperColumns;
     /**
-     * Set grid events for resize and keydown.
+     * Set grid events for resize, load and keydown.
      */
     private setGridEvents;
+    /**
+     * Refresh the visible grid when the viewport or the styles change.
+     */
+    private handleViewportChange;
     /**
      * Handle keydown event to toggle the grid.
      */
     private handleKeyDown;
     /**
-     * Handle keyup event to reset Control key state.
+     * Show or hide the grid and remember the choice for the next page load.
      */
-    private handleKeyUp;
+    private setActive;
     /**
-     * Toggle the visibility of the grid.
+     * Apply the configuration that matches the current viewport.
      */
-    private toggleGridVisibility;
+    private update;
+    private readStoredState;
+    private writeStoredState;
 }
 export * from './types';

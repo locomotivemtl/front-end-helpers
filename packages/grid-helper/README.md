@@ -70,6 +70,14 @@ const gridHelper = new GridHelper({
 });
 ```
 
+### Cleanup
+
+Call `destroy()` to remove the overlay and its event listeners, for example before a page transition replaces the container:
+
+```js
+gridHelper.destroy();
+```
+
 ## Options
 
 ### Main Options
@@ -95,3 +103,9 @@ const gridHelper = new GridHelper({
 | `color`       | `string`                 | Color of the grid in CSS format.                               |
 | `opacity`     | `number`                 | Opacity of the grid.                                           |
 | `key`         | `string`                 | Key to toggle the grid visibility (with Control key).          |
+
+## Methods
+
+| Method      | Description                                      |
+|-------------|--------------------------------------------------|
+| `destroy()` | Removes the grid overlay and its event listeners. |

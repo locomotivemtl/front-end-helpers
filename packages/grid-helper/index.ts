@@ -49,6 +49,15 @@ export default class GridHelper {
     }
 
     /**
+     * Remove the grid overlay and its event listeners.
+     */
+    public destroy() {
+        window.removeEventListener('resize', this.handleViewportChange);
+        document.removeEventListener('keydown', this.handleKeyDown);
+        this.gridContainer.remove();
+    }
+
+    /**
      * Get the current breakpoint configuration based on the window width.
      */
     private getBreakpointConfig(): GridHelperBreakpointConfig {

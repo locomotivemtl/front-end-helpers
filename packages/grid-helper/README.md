@@ -9,6 +9,7 @@ The `GridHelper` class is a utility that creates an overlay grid for web develop
 - Supports custom breakpoints, allowing different grid configurations at various screen widths.
 - Automatically updates the grid when the window is resized.
 - Mount the grid overlay inside a specific element instead of `document.body`.
+- Remembers whether the grid is visible across page reloads, for the current tab.
 
 ## Installation
 
@@ -69,6 +70,10 @@ const gridHelper = new GridHelper({
     marginWidth: `var(--grid-margin)`,
 });
 ```
+
+### Visible State
+
+The grid remembers whether it is visible in `sessionStorage`, so it stays on when the page reloads and resets when the tab closes. The state is stored per toggle key.
 
 ### Cleanup
 

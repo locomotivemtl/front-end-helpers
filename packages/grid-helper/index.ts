@@ -11,6 +11,8 @@ const DEFAULT_CONFIG: SharedGridConfig = {
     key: 'g'
 };
 
+const STORAGE_PREFIX = 'grid-helper:';
+
 /**
  * Grid Helper
  *
@@ -25,6 +27,7 @@ export default class GridHelper {
     private currentBreakpointConfig: GridHelperBreakpointConfig;
     private container: HTMLElement;
     private gridContainer: HTMLElement;
+    private storageKey: string;
     private isActive: boolean = false;
 
     constructor(config: Partial<GridHelperConfig> = {}) {
@@ -32,6 +35,7 @@ export default class GridHelper {
 
         this.container = container ?? document.body;
         this.sharedConfig = { ...DEFAULT_CONFIG, ...sharedConfig };
+        this.storageKey = `${STORAGE_PREFIX}${this.sharedConfig.key}`;
         this.breakpoints = Object.keys(breakpoints)
             .map((minWidth): [number, Partial<GridHelperBreakpointConfig>] => [
                 parseInt(minWidth),
@@ -45,7 +49,7 @@ export default class GridHelper {
         this.container.append(this.gridContainer);
 
         this.setGridEvents();
-        this.update();
+        this.setActive(this.readStoredState());
     }
 
     /**
@@ -53,6 +57,7 @@ export default class GridHelper {
      */
     public destroy() {
         window.removeEventListener('resize', this.handleViewportChange);
+        window.removeEventListener('load', this.handleViewportChange);
         document.removeEventListener('keydown', this.handleKeyDown);
         this.gridContainer.remove();
     }
@@ -134,15 +139,17 @@ export default class GridHelper {
     }
 
     /**
-     * Set grid events for resize and keydown.
+     * Set grid events for resize, load and keydown.
      */
     private setGridEvents() {
         window.addEventListener('resize', this.handleViewportChange);
+        // A grid restored before the stylesheets load reads its CSS variables too early
+        window.addEventListener('load', this.handleViewportChange);
         document.addEventListener('keydown', this.handleKeyDown);
     }
 
     /**
-     * Refresh the visible grid when the viewport changes.
+     * Refresh the visible grid when the viewport or the styles change.
      */
     private handleViewportChange = () => {
         if (this.isActive) {
@@ -164,11 +171,12 @@ export default class GridHelper {
     };
 
     /**
-     * Show or hide the grid.
+     * Show or hide the grid and remember the choice for the next page load.
      */
     private setActive(isActive: boolean) {
         this.isActive = isActive;
         this.update();
+        this.writeStoredState();
     }
 
     /**
@@ -179,6 +187,27 @@ export default class GridHelper {
 
         this.setGridHelperStyles();
         this.setGridHelperColumns();
+    }
+
+    private readStoredState(): boolean {
+        try {
+            return sessionStorage.getItem(this.storageKey) !== null;
+        } catch {
+            // Storage is blocked: the grid works, it just starts hidden
+            return false;
+        }
+    }
+
+    private writeStoredState() {
+        try {
+            if (this.isActive) {
+                sessionStorage.setItem(this.storageKey, '1');
+            } else {
+                sessionStorage.removeItem(this.storageKey);
+            }
+        } catch {
+            // Storage is blocked: the grid works, it just is not remembered
+        }
     }
 }
 

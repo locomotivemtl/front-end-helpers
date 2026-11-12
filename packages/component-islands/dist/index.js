@@ -10,6 +10,7 @@ export default function componentIslands(userOptions = {}) {
     let server;
     let directories = [];
     let inventory = new Map();
+    let failed = false;
     const tagOf = (file) => [...inventory].find(([, owner]) => owner === file)?.[0];
     async function rescan() {
         inventory = await discoverIslands(config.root, directories);
@@ -24,17 +25,29 @@ export default function componentIslands(userOptions = {}) {
         void server.reloadModule(module);
     }
     // `code` is null for a deleted file. Rescans when the file starts, stops or changes being an island.
+    // After a failed rescan it rescans on every relevant event, since the tag set is stale.
     async function sync(file, code) {
         if (!isSourceFile(file))
             return;
         const knownTag = tagOf(file);
         const isIsland = code !== null && (isInDirectories(file, directories) || importsMixin(code));
-        if (!knownTag && !isIsland)
+        if (!knownTag && !isIsland && !(failed && code === null))
             return;
-        if (knownTag && isIsland && extractTag(file, code, config.root) === knownTag)
+        if (!failed && knownTag && isIsland && extractTag(file, code, config.root) === knownTag)
             return;
         await rescan();
+        failed = false;
         invalidateVirtualModule();
+    }
+    // Discovery errors in dev come from user files: show them, keep the last good inventory.
+    function reportError(error) {
+        if (!server)
+            throw error;
+        failed = true;
+        const err = error instanceof Error ? error : new Error(String(error));
+        const { message, stack = '' } = err;
+        server.config.logger.error(message, { timestamp: true, error: err });
+        server.ws.send({ type: 'error', err: { message, stack, plugin: 'component-islands' } });
     }
     return {
         name: 'component-islands',
@@ -71,10 +84,15 @@ export default function componentIslands(userOptions = {}) {
             });
         },
         async watchChange(id, { event }) {
-            if (event === 'delete')
-                return sync(id, null);
-            if (isSourceFile(id))
-                return sync(id, await readFile(id, 'utf8'));
+            try {
+                if (event === 'delete')
+                    return await sync(id, null);
+                if (isSourceFile(id))
+                    await sync(id, await readFile(id, 'utf8'));
+            }
+            catch (error) {
+                reportError(error);
+            }
         },
         async transform(code, id) {
             if (server)

@@ -1,3 +1,5 @@
+import { Declaration, Root } from 'postcss';
+
 type Options = {
     prefix?: string;
     shortcuts?: {
@@ -45,8 +47,8 @@ const postcssTailwindShortcuts = (options: Options = {}) => {
     return {
         postcssPlugin: 'postcss-tailwind-shortcuts',
 
-        Root(root) {
-            root.walkDecls((decl) => {
+        Root(root: Root) {
+            root.walkDecls((decl: Declaration) => {
                 if (!decl.value) return;
 
                 // Regular expression to match function calls like:

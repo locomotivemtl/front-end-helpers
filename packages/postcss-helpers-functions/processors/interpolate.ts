@@ -49,7 +49,8 @@ function splitArgs(input: string): string[] {
     const result: string[] = [];
     let current = '';
     let depth = 0;
-    for (const char of input) {
+    for (let i = 0; i < input.length; i++) {
+        const char = input[i];
         if (char === '(') depth++;
         else if (char === ')') depth--;
 

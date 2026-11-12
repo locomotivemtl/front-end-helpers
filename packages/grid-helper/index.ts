@@ -1,8 +1,9 @@
-import { GridHelperBreakpointConfig, GridHelperConfig, SharedGridConfig } from './types';
+import type { GridHelperBreakpointConfig, GridHelperConfig, SharedGridConfig } from './types';
 
-// Default configuration
-const defaultConfig: GridHelperConfig = {
-    columns: 12,
+const DEFAULT_COLUMNS = 12;
+
+const DEFAULT_CONFIG: SharedGridConfig = {
+    columns: DEFAULT_COLUMNS,
     gutterWidth: '16px',
     marginWidth: '16px',
     color: 'red',
@@ -20,63 +21,31 @@ const defaultConfig: GridHelperConfig = {
  */
 export default class GridHelper {
     private sharedConfig: SharedGridConfig;
-    private breakpoints: { [key: string]: Partial<GridHelperBreakpointConfig> };
+    private breakpoints: [minWidth: number, config: Partial<GridHelperBreakpointConfig>][];
     private currentBreakpointConfig: GridHelperBreakpointConfig;
-    private previousBreakpointConfig: GridHelperBreakpointConfig | null = null;
     private container: HTMLElement;
     private gridContainer: HTMLElement;
     private isActive: boolean = false;
-    private ctrlDown: boolean = false;
 
     constructor(config: Partial<GridHelperConfig> = {}) {
-        this.container = config.container ?? document.body;
-        delete config.container;
+        const { container, breakpoints = {}, ...sharedConfig } = config;
 
-        const mergedConfig = this.mergeConfig(config, defaultConfig);
-        this.sharedConfig = mergedConfig;
-        this.breakpoints = mergedConfig.breakpoints || {};
+        this.container = container ?? document.body;
+        this.sharedConfig = { ...DEFAULT_CONFIG, ...sharedConfig };
+        this.breakpoints = Object.keys(breakpoints)
+            .map((minWidth): [number, Partial<GridHelperBreakpointConfig>] => [
+                parseInt(minWidth),
+                breakpoints[minWidth]
+            ])
+            .sort((a, b) => a[0] - b[0]);
 
-        // Determine initial breakpoint config
         this.currentBreakpointConfig = this.getBreakpointConfig();
-        this.previousBreakpointConfig = this.currentBreakpointConfig;
 
-        // Initialize the grid container
         this.gridContainer = document.createElement('div');
         this.container.append(this.gridContainer);
 
-        this.initialize();
-    }
-
-    /**
-     * Deep merge user config with default config
-     */
-    private mergeConfig(
-        userConfig: Partial<GridHelperConfig>,
-        defaultConfig: GridHelperConfig
-    ): GridHelperConfig {
-        const breakpoints = { ...defaultConfig.breakpoints, ...userConfig.breakpoints };
-
-        if (userConfig.breakpoints) {
-            for (const key in userConfig.breakpoints) {
-                breakpoints[key] = { ...breakpoints[key], ...userConfig.breakpoints[key] };
-            }
-        }
-
-        delete userConfig.breakpoints;
-
-        const sharedConfig = { ...defaultConfig, ...userConfig };
-
-        return {
-            ...sharedConfig,
-            breakpoints
-        };
-    }
-
-    /**
-     * Initialize the grid helper by setting styles, columns, and events.
-     */
-    private initialize() {
         this.setGridEvents();
+        this.update();
     }
 
     /**
@@ -84,21 +53,39 @@ export default class GridHelper {
      */
     private getBreakpointConfig(): GridHelperBreakpointConfig {
         const width = window.innerWidth;
-        let matchedBreakpointConfig: Partial<GridHelperBreakpointConfig> = this.sharedConfig;
+        let matchedBreakpointConfig: GridHelperBreakpointConfig = this.sharedConfig;
 
-        // Find the closest breakpoint that is less than or equal to the current window width.
-        for (const [breakpoint, config] of Object.entries(this.breakpoints)) {
-            if (width >= parseInt(breakpoint)) {
+        // Breakpoints are sorted, so the last match is the widest one that fits
+        for (const [minWidth, config] of this.breakpoints) {
+            if (width >= minWidth) {
                 matchedBreakpointConfig = { ...this.sharedConfig, ...config };
             }
         }
 
-        return matchedBreakpointConfig as GridHelperBreakpointConfig;
+        return matchedBreakpointConfig;
     }
 
-    private extractCSSVariable(value: string): string | null {
-        const match = value.match(/var\((--[\w-]+)\)/);
-        return match ? match[1] : null;
+    /**
+     * Resolve the column count, reading the CSS variable when `columns` is one.
+     */
+    private getColumnCount(): number {
+        const { columns } = this.currentBreakpointConfig;
+
+        if (typeof columns === 'number') {
+            return columns;
+        }
+
+        const cssVariable = columns.match(/var\(\s*(--[\w-]+)/)?.[1];
+
+        if (!cssVariable) {
+            return DEFAULT_COLUMNS;
+        }
+
+        // Read from the grid element so a variable scoped to the container resolves
+        const cssValue = getComputedStyle(this.gridContainer).getPropertyValue(cssVariable);
+        const count = parseInt(cssValue);
+
+        return isNaN(count) ? DEFAULT_COLUMNS : count;
     }
 
     /**
@@ -124,33 +111,9 @@ export default class GridHelper {
      * Set grid columns.
      */
     private setGridHelperColumns() {
-        // Clear previous columns
         this.gridContainer.innerHTML = '';
 
-        let columns = 0;
-
-        // Get the columns value, which can be either a number or a string
-        let configColumns = this.currentBreakpointConfig.columns;
-
-        // If configColumns is a string, check if it's a CSS variable
-        if (typeof configColumns === 'string') {
-            const cssVariable = this.extractCSSVariable(configColumns);
-
-            if (cssVariable) {
-                const computedStyle = getComputedStyle(document.documentElement);
-                const cssValue = computedStyle.getPropertyValue(cssVariable);
-
-                // Parse the CSS variable value to an integer
-                columns = parseInt(cssValue);
-
-                // Provide a fallback in case of NaN
-                if (isNaN(columns)) {
-                    columns = 12; // Default fallback
-                }
-            }
-        } else if (typeof configColumns === 'number') {
-            columns = configColumns;
-        }
+        const columns = this.getColumnCount();
 
         for (let i = 0; i < columns; i++) {
             const column = document.createElement('div');
@@ -165,50 +128,48 @@ export default class GridHelper {
      * Set grid events for resize and keydown.
      */
     private setGridEvents() {
-        // Handle resize to update the grid columns and styles
-        window.addEventListener('resize', () => {
-            this.currentBreakpointConfig = this.getBreakpointConfig();
-
-            this.setGridHelperStyles();
-            this.setGridHelperColumns();
-        });
-
-        // Toggle grid visibility with keyboard events
-        document.addEventListener('keydown', (e) => this.handleKeyDown(e));
-        document.addEventListener('keyup', (e) => this.handleKeyUp(e));
+        window.addEventListener('resize', this.handleViewportChange);
+        document.addEventListener('keydown', this.handleKeyDown);
     }
+
+    /**
+     * Refresh the visible grid when the viewport changes.
+     */
+    private handleViewportChange = () => {
+        if (this.isActive) {
+            this.update();
+        }
+    };
 
     /**
      * Handle keydown event to toggle the grid.
      */
-    private handleKeyDown(e: KeyboardEvent) {
-        if (e.key === 'Control') {
-            this.ctrlDown = true;
-        } else if (this.ctrlDown && e.key === this.sharedConfig.key) {
-            this.currentBreakpointConfig = this.getBreakpointConfig();
-
-            this.setGridHelperStyles();
-            this.setGridHelperColumns();
-
-            this.toggleGridVisibility();
+    private handleKeyDown = (e: KeyboardEvent) => {
+        if (!e.ctrlKey || e.repeat) {
+            return;
         }
+
+        if (e.key.toLowerCase() === this.sharedConfig.key.toLowerCase()) {
+            this.setActive(!this.isActive);
+        }
+    };
+
+    /**
+     * Show or hide the grid.
+     */
+    private setActive(isActive: boolean) {
+        this.isActive = isActive;
+        this.update();
     }
 
     /**
-     * Handle keyup event to reset Control key state.
+     * Apply the configuration that matches the current viewport.
      */
-    private handleKeyUp(e: KeyboardEvent) {
-        if (e.key === 'Control') {
-            this.ctrlDown = false;
-        }
-    }
+    private update() {
+        this.currentBreakpointConfig = this.getBreakpointConfig();
 
-    /**
-     * Toggle the visibility of the grid.
-     */
-    private toggleGridVisibility() {
-        this.gridContainer.style.visibility = this.isActive ? 'hidden' : 'visible';
-        this.isActive = !this.isActive;
+        this.setGridHelperStyles();
+        this.setGridHelperColumns();
     }
 }
 

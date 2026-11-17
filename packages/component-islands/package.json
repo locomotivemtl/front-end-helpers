@@ -1,0 +1,73 @@
+{
+    "name": "@locomotivemtl/component-islands",
+    "version": "0.1.0",
+    "description": "Vite plugin and Astro integration that lazy-loads custom elements (islands) with client directives.",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/locomotivemtl/front-end-helpers.git"
+    },
+    "author": "Locomotive Inc.",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/locomotivemtl/front-end-helpers/issues"
+    },
+    "engines": {
+        "node": ">=20"
+    },
+    "type": "module",
+    "sideEffects": false,
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./astro": {
+            "types": "./dist/astro.d.ts",
+            "default": "./dist/astro.js"
+        },
+        "./island": {
+            "types": "./dist/island.d.ts",
+            "default": "./dist/island.js"
+        },
+        "./events": {
+            "types": "./dist/events.d.ts",
+            "default": "./dist/events.js"
+        },
+        "./revive": {
+            "types": "./revive.d.ts"
+        }
+    },
+    "files": [
+        "dist",
+        "revive.d.ts"
+    ],
+    "scripts": {
+        "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+        "build": "npm run clean && tsc -p tsconfig.json",
+        "check": "npm run build && node test.mjs",
+        "format": "npx prettier@3 --write \"src/**/*.ts\" test.mjs README.md"
+    },
+    "homepage": "https://github.com/locomotivemtl/front-end-helpers/tree/main/packages/component-islands",
+    "peerDependencies": {
+        "vite": ">=6"
+    },
+    "devDependencies": {
+        "@types/node": "^20",
+        "typescript": "^5",
+        "vite": "^7.3.8"
+    },
+    "keywords": [
+        "vite",
+        "vite-plugin",
+        "astro",
+        "astro-integration",
+        "web-components",
+        "custom-elements",
+        "islands",
+        "lazy-loading",
+        "client-directives"
+    ],
+    "publishConfig": {
+        "access": "public"
+    }
+}

@@ -56,7 +56,6 @@ ${loaders.join(',\n')}
 }));
 
 if (import.meta.hot) {
-    import.meta.hot.accept();
     import.meta.hot.dispose(() => {
         runtime.disconnect();
         delete globalThis[key];

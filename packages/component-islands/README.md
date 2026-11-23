@@ -30,6 +30,8 @@ import '@locomotivemtl/component-islands/revive';
 
 The plugin finds your islands at build time and emits one lazy chunk per island. The runtime is a page-level singleton: importing `revive` from several files shares one instance.
 
+In dev, saving an island file reloads the page, as do adding or removing an island. A custom element can't be redefined once registered, so hot-swapping the module would leave the old class running.
+
 ## Astro setup
 
 ```js
